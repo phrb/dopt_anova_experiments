@@ -11,7 +11,7 @@ results <- read.csv(read_file, strip.white=T, header=T)
 
 budget <- 120
 
-iterations <- 100
+iterations <- 1000
 
 factors = c("elements_number", "y_component_number",
             "vector_length", "temporary_size",
@@ -45,6 +45,7 @@ for (i in 1:iterations) {
                          nTrials = 24)
 
     federov_design <- data[output$rows, ]
+    experiments <- output$rows
 
     # str(data)
     # str(federov_design)
@@ -57,9 +58,9 @@ for (i in 1:iterations) {
                                        threads_number + I(1 / threads_number),
                       data = federov_design)
 
-    used <- used + 24
+    used <- used + nrow(federov_design)
 
-    # summary(regression)
+    # print(summary(regression))
 
     # Checking the ANOVA summary we can identify at least two variables
     # that seem to have greater impact: 'vector_length' and 'lws_y'.
@@ -73,20 +74,22 @@ for (i in 1:iterations) {
                           complete_data$lws_y == predicted_best$lws_y, c(factors, "time_per_pixel")]
     scaled_data <- data[, factors]
 
-    if (nrow(scaled_data) > 24) {
+    if (nrow(scaled_data) > 18) {
         output <- optFederov(~ y_component_number + I(1 / y_component_number) + 
                                load_overlap + temporary_size +
                                elements_number + I(1 / elements_number) +
                                threads_number + I(1 / threads_number),
                              scaled_data,
-                             nTrials = 24)
+                             nTrials = 18)
 
         federov_design <- data[output$rows, ]
-        used <- used + 24
     } else {
         federov_design <- data
-        used <- used + nrow(federov_design)
     }
+
+    used_rows <- rownames(federov_design)[!(rownames(federov_design) %in% experiments)]
+    used <- used + nrow(federov_design[used_rows, ])
+    experiments <- c(experiments, output$rows[!(output$rows %in% experiments)])
 
     # str(data)
     # str(federov_design)
@@ -97,7 +100,7 @@ for (i in 1:iterations) {
                                        threads_number + I(1 / threads_number),
                       data = federov_design)
 
-    # summary(regression)
+    # print(summary(regression))
 
     # Checking the ANOVA summary we can identify at least two variables
     # that seem to have greater impact: 'y_component_number' and 'threads_number'.
@@ -113,18 +116,20 @@ for (i in 1:iterations) {
                           complete_data$threads_number == predicted_best$threads_number, c(factors, "time_per_pixel")]
     scaled_data <- data[, factors]
 
-    if (nrow(scaled_data) > 24) {
+    if (nrow(scaled_data) > 10) {
         output <- optFederov(~ load_overlap + temporary_size +
                                elements_number + I(1 / elements_number),
                              scaled_data,
-                             nTrials = 24)
+                             nTrials = 10)
 
         federov_design <- data[output$rows, ]
-        used <- used + 24
     } else {
         federov_design <- data
-        used <- used + nrow(federov_design)
     }
+
+    used_rows <- rownames(federov_design)[!(rownames(federov_design) %in% experiments)]
+    used <- used + nrow(federov_design[used_rows, ])
+    experiments <- c(experiments, output$rows[!(output$rows %in% experiments)])
 
     # str(data)
     # str(federov_design)
@@ -133,7 +138,7 @@ for (i in 1:iterations) {
                                        elements_number + I(1 / elements_number),
                       data = federov_design)
 
-    # summary(regression)
+    # print(summary(regression))
 
     # Checking the ANOVA summary we can identify, at last, one variable
     # that seem to have greater impact: 'elements_number'
@@ -151,17 +156,19 @@ for (i in 1:iterations) {
                           complete_data$elements_number == predicted_best$elements_number, c(factors, "time_per_pixel")]
     scaled_data <- data[, factors]
 
-    if (nrow(scaled_data) > 24) {
+    if (nrow(scaled_data) > 6) {
         output <- optFederov(~ load_overlap + temporary_size,
                              scaled_data,
-                             nTrials = 24)
+                             nTrials = 6)
 
         federov_design <- data[output$rows, ]
-        used <- used + 24
     } else {
         federov_design <- data
-        used <- used + nrow(federov_design)
     }
+
+    used_rows <- rownames(federov_design)[!(rownames(federov_design) %in% experiments)]
+    used <- used + nrow(federov_design[used_rows, ])
+    experiments <- c(experiments, output$rows[!(output$rows %in% experiments)])
 
     # str(data)
     # str(federov_design)
@@ -169,7 +176,7 @@ for (i in 1:iterations) {
     regression <- aov(time_per_pixel ~ load_overlap + temporary_size,
                       data = federov_design)
 
-    # summary(regression)
+    # print(summary(regression))
 
     predicted_best <- data[predict(regression, data) == min(predict(regression, data)), ]
     # predicted_best

@@ -1,0 +1,173 @@
+# -*- mode: org -*-
+# -*- coding: utf-8 -*-
+#+STARTUP: overview indent inlineimages logdrawer
+#+TITLE: Autotuning: D-Optimal Designs
+#+AUTHOR:      Pedro Bruel
+#+LANGUAGE:    en
+#+TAGS: noexport(n) Stats(S)
+#+TAGS: Teaching(T) R(R) OrgMode(O) Python(P)
+#+TAGS: Book(b) DOE(D) Code(C) NODAL(N) FPGA(F) Autotuning(A) Arnaud(r)
+#+TAGS: DataVis(v) PaperReview(W)
+#+EXPORT_SELECT_TAGS: Blog
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+COLUMNS: %25ITEM %TODO %3PRIORITY %TAGS
+#+SEQ_TODO: TODO(t!) STARTED(s!) WAITING(w@) APPT(a!) | DONE(d!) CANCELLED(c!) DEFERRED(f!)
+
+#+LATEX_CLASS_OPTIONS: [final,12pt,a4paper]
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+#+LATEX_HEADER: \usepackage{booktabs}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{sourcecodepro}
+#+LATEX_HEADER: \usepackage{url}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[english]{babel}
+#+LATEX_HEADER: \usepackage{multirow}
+#+LATEX_HEADER: \usepackage{textcomp}
+#+LATEX_HEADER: \usepackage{caption}
+#+LATEX_HEADER: \usepackage{hyperref}
+#+LATEX_HEADER: \usepackage{sourcecodepro}
+#+LATEX_HEADER: \usepackage{booktabs}
+#+LATEX_HEADER: \usepackage{array}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage[english]{babel}
+#+LATEX_HEADER: \usepackage[scale=2]{ccicons}
+#+LATEX_HEADER: \usepackage{url}
+#+LATEX_HEADER: \usepackage{relsize}
+#+LATEX_HEADER: \usepackage{amsmath}
+#+LATEX_HEADER: \usepackage{bm}
+#+LATEX_HEADER: \usepackage{wasysym}
+#+LATEX_HEADER: \usepackage{ragged2e}
+#+LATEX_HEADER: \usepackage{textcomp}
+#+LATEX_HEADER: \usepackage{pgfplots}
+#+LATEX_HEADER: \usepgfplotslibrary{dateplot}
+#+LATEX_HEADER: \setsansfont[BoldFont={Source Sans Pro Semibold},Numbers={OldStyle}]{Source Sans Pro}
+#+LATEX_HEADER: \lstdefinelanguage{Julia}%
+#+LATEX_HEADER:   {morekeywords={abstract,struct,break,case,catch,const,continue,do,else,elseif,%
+#+LATEX_HEADER:       end,export,false,for,function,immutable,mutable,using,import,importall,if,in,%
+#+LATEX_HEADER:       macro,module,quote,return,switch,true,try,catch,type,typealias,%
+#+LATEX_HEADER:       while,<:,+,-,::,/},%
+#+LATEX_HEADER:    sensitive=true,%
+#+LATEX_HEADER:    alsoother={$},%
+#+LATEX_HEADER:    morecomment=[l]\#,%
+#+LATEX_HEADER:    morecomment=[n]{\#=}{=\#},%
+#+LATEX_HEADER:    morestring=[s]{"}{"},%
+#+LATEX_HEADER:    morestring=[m]{'}{'},%
+#+LATEX_HEADER: }[keywords,comments,strings]%
+#+LATEX_HEADER: \lstset{ %
+#+LATEX_HEADER:   backgroundcolor={},
+#+LATEX_HEADER:   basicstyle=\ttfamily\scriptsize,
+#+LATEX_HEADER:   breakatwhitespace=true,
+#+LATEX_HEADER:   breaklines=true,
+#+LATEX_HEADER:   captionpos=n,
+#+LATEX_HEADER:   commentstyle=\color{black},
+#+LATEX_HEADER:   extendedchars=true,
+#+LATEX_HEADER:   frame=n,
+#+LATEX_HEADER:   keywordstyle=\color{black},
+#+LATEX_HEADER:   language=R,
+#+LATEX_HEADER:   rulecolor=\color{black},
+#+LATEX_HEADER:   showspaces=false,
+#+LATEX_HEADER:   showstringspaces=false,
+#+LATEX_HEADER:   showtabs=false,
+#+LATEX_HEADER:   stepnumber=2,
+#+LATEX_HEADER:   stringstyle=\color{gray},
+#+LATEX_HEADER:   tabsize=2,
+#+LATEX_HEADER: }
+#+LATEX_HEADER: \renewcommand*{\UrlFont}{\ttfamily\smaller\relax}
+
+* Results
+** Comparing Strategies
+   #+HEADER: :file ../img/comparison_histogram.pdf :exports results :width 7 :height 8
+   #+BEGIN_SRC R :results output graphics  :session *R*
+   library(ggplot2)
+   library(plyr)
+
+   df_all_methods <- read.csv("../data/testing_1000.csv", strip.white=T, header=T)
+
+   df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM","RQ", "DOPTaov"))
+
+   df_mean = ddply(df_all_methods,.(method), summarize,
+                   mean = mean(slowdown))
+
+   df_median = ddply(df_all_methods,.(method), summarize,
+                     median = median(slowdown))
+
+   df_err = ddply(df_all_methods,.(method), summarize,
+                 mean = mean(slowdown), err = 2*sd(slowdown)/sqrt(length(slowdown)))
+
+   df_max = ddply(df_all_methods,.(method), summarize, max = max(slowdown))
+
+   ggplot(df_all_methods ) +
+       facet_grid(method~.) +
+       theme_bw() +
+       coord_cartesian(xlim=c(.9,4), ylim=c(0,1000)) +
+       geom_histogram(aes(slowdown),binwidth=.05, fill="gray48") +
+       geom_curve(data=df_max, aes(x=max+.1, y=500, xend=max, yend=5), arrow = arrow(length = unit(0.05, "npc")), curvature=0.3) +
+       geom_text( aes(x=max+.2,y=550,label="max"),data=df_max ) +
+       geom_rect(data = df_err, aes(xmin=mean-err, xmax=mean+err, ymin=0, ymax=1000, fill="red"), alpha=0.3) +
+       geom_vline( aes(xintercept = median), df_median, color="darkgreen", linetype=3 ) +
+       geom_vline( aes(xintercept = mean), df_mean, color="red", linetype=2 ) +
+       labs(y="Frequency", x="Slowdown compared to the optimal solution") +
+       scale_fill_discrete(name="",breaks=c("red"), labels=c("Mean error")) +
+       ggtitle("") +
+       theme(legend.position="top")
+   #+END_SRC
+
+   #+RESULTS:
+   [[file:../img/comparison_histogram.pdf]]
+
+   #+HEADER: :results output latex :session *R* :exports results
+   #+BEGIN_SRC R
+   library(xtable)
+   summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))[ , 1],
+                                  mean(df_all_methods[df_all_methods$method == "RS",]$point_number)),
+                           LHS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LHS", ]$slowdown)))[ , 1],
+                                                             mean(df_all_methods[df_all_methods$method == "LHS",]$point_number)),
+                           GS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GS", ]$slowdown)))[ , 1],
+                                                             mean(df_all_methods[df_all_methods$method == "GS",]$point_number)),
+                           GSR = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GSR", ]$slowdown)))[ , 1],
+                                                             mean(df_all_methods[df_all_methods$method == "GSR",]$point_number)),
+                           GA = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GA", ]$slowdown)))[ , 1],
+                                                             mean(df_all_methods[df_all_methods$method == "GA",]$point_number)),
+                           LM = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LM", ]$slowdown)))[ , 1],
+                                                             mean(df_all_methods[df_all_methods$method == "LM",]$point_number)),
+                           RQ = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RQ", ]$slowdown)))[ , 1],
+                                                             mean(df_all_methods[df_all_methods$method == "RQ",]$point_number)),
+                           DOPTaov = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPTaov", ]$slowdown)))[ , 1],
+                                                             mean(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number)))
+
+   rownames(summaries) <- c(rownames(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))), "Mean Pt.")
+   x <- xtable(summaries, caption = "Summary statistics")
+   align(x) <- xalign(x)
+   display(x) <- display(x)
+   x
+   #+END_SRC
+
+   #+RESULTS:
+   #+BEGIN_EXPORT latex
+   % latex table generated in R 3.4.4 by xtable 1.8-2 package
+   % Thu May  3 13:42:54 2018
+   \begin{table}[ht]
+   \centering
+   \begin{tabular}{rrrrrrrrr}
+     \hline
+    & RS & LHS & GS & GSR & GA & LM & RQ & DOPTaov \\ 
+     \hline
+   Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 \\ 
+     1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.01 \\ 
+     Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.01 & 1.01 \\ 
+     Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.02 & 1.01 \\ 
+     3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.01 & 1.01 \\ 
+     Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 2.06 & 1.08 \\ 
+     Budget Mean & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 119.00 & 54.85 \\ 
+      \hline
+   \end{tabular}
+   \end{table}
+   #+END_EXPORT
+   
