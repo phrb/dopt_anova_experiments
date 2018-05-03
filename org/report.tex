@@ -1,10 +1,10 @@
-% Created 2018-05-03 Thu 14:53
+% Created 2018-05-03 Thu 15:52
 % Intended LaTeX compiler: pdflatex
 \documentclass[final,12pt,a4paper]{article}
 
 \usepackage{graphicx}
 \usepackage{amssymb}
-\usepackage[margin=0.5in]{geometry}
+\usepackage[margin=0.6in]{geometry}
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{sourcecodepro}
@@ -81,18 +81,93 @@ tabsize=2,
 \tableofcontents
 
 
+\section{Autotuning with D-Optimal Designs and Analysis of Variance}
+\label{sec:org4419cd5}
+\begin{enumerate}
+\item Use \texttt{optFederov} to find 24 experiments for the full model:
+\begin{align*}
+    Y = & \; y\_component\_number + 1 / y\_component\_number + \\
+        & \; vector\_length + lws\_y + 1 / lws\_y + \\
+        & \; load\_overlap + temporary\_size + \\
+        & \; elements\_number + 1 / elements\_number + \\
+        & \; threads\_number + 1 / threads\_number
+\end{align*}
+\item Use \texttt{aov} to fit the full model, spending the 24 evaluations:
+\begin{align*}
+      time\_per\_pixel = & \; y\_component\_number + 1 / y\_component\_number + \\
+                        & \; vector\_length + lws\_y + 1 / lws\_y + \\
+                        & \; load\_overlap + temporary\_size + \\
+                        & \; elements\_number + 1 / elements\_number + \\
+                        & \; threads\_number + 1 / threads\_number
+\end{align*}
+\item Identify the most significant factors from the ANOVA summary. In this
+case, they are \(vector\_length\) and \(lws\_y\).
+\item Use the fitted model to predict the best \(time\_per\_pixel\) value in the
+entire dataset
+\item Prune the dataset using the predicted best values for \(vector\_length\) and \(lws\_y\)
+\item Use \texttt{optFederov} to find 24 experiments for the pruned model. If there are less
+than or exactly 24 candidates, use the full candidate set.
+\begin{align*}
+    Y = & \; y\_component\_number + 1 / y\_component\_number + \\
+        & \; load\_overlap + temporary\_size + \\
+        & \; elements\_number + 1 / elements\_number + \\
+        & \; threads\_number + 1 / threads\_number
+\end{align*}
+\item Use \texttt{aov} to fit the pruned model, spending the 24 evaluations:
+\begin{align*}
+      time\_per\_pixel = & \; y\_component\_number + 1 / y\_component\_number + \\
+                        & \; load\_overlap + temporary\_size + \\
+                        & \; elements\_number + 1 / elements\_number + \\
+                        & \; threads\_number + 1 / threads\_number
+\end{align*}
+\item Identify the most significant factors from the ANOVA summary. In this
+case, they are \(y\_component\_number\) and \(threads\_number\).
+\item Use the fitted model to predict the best \(time\_per\_pixel\) value in the
+entire dataset
+\item Prune the dataset using the predicted best values for \(y\_component\_number\) and
+\(threads\_number\)
+\item Use \texttt{optFederov} to find 24 experiments for the pruned model. If there are less
+than or exactly 24 candidates, use the full candidate set.
+\begin{align*}
+    Y = & \; load\_overlap + temporary\_size + \\
+        & \; elements\_number + 1 / elements\_number
+\end{align*}
+\item Use \texttt{aov} to fit the pruned model, spending the 24 evaluations:
+\begin{align*}
+      time\_per\_pixel = & \; load\_overlap + temporary\_size + \\
+                        & \; elements\_number + 1 / elements\_number
+\end{align*}
+\item Identify the most significant factors from the ANOVA summary. In this
+case, it is \(elements\_number\)
+\item Use the fitted model to predict the best \(time\_per\_pixel\) value in the
+entire dataset
+\item Prune the dataset using the predicted best values for \(elements\_number\)
+\item Use \texttt{optFederov} to find 24 experiments for the pruned model. If there are less
+than or exactly 24 candidates, use the full candidate set.
+\begin{align*}
+    Y = load\_overlap + temporary\_size
+\end{align*}
+\item Use \texttt{aov} to fit the pruned model, spending the 24 evaluations:
+\begin{align*}
+      time\_per\_pixel = load\_overlap + temporary\_size
+\end{align*}
+\item Use the fitted model to predict the best \(time\_per\_pixel\) value in the
+entire dataset
+\item Compare the predicted \(time\_per\_pixel\) with the global optimum
+\end{enumerate}
 \section{Results}
-\label{sec:orge42ea71}
+\label{sec:org67cb3ca}
 \subsection{Comparing Strategies}
-\label{sec:org8051c3e}
+\label{sec:org4b942c1}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/comparison_histogram.pdf}
 \end{center}
 
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Thu May  3 14:53:44 2018
+% Thu May  3 15:52:41 2018
 \begin{table}[ht]
 \centering
+\begingroup\small
 \begin{tabular}{lrrrrrrrrr}
   \hline
  & RS & LHS & GS & GSR & GA & LM & RQ & DOPT & DOPTaov \\ 
@@ -104,8 +179,10 @@ Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.38 & 1.01 \\
   3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
   Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 2.06 & 2.91 & 1.08 \\ 
   Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 54.85 \\ 
+  Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 56.00 \\ 
    \hline
 \end{tabular}
+\endgroup
 \caption{Summary statistics} 
 \end{table}
 \end{document}

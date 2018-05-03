@@ -19,7 +19,7 @@
 #+LATEX_CLASS_OPTIONS: [final,12pt,a4paper]
 #+LATEX_HEADER: \usepackage{graphicx}
 #+LATEX_HEADER: \usepackage{amssymb}
-#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+#+LATEX_HEADER: \usepackage[margin=0.6in]{geometry}
 #+LATEX_HEADER: \usepackage{booktabs}
 #+LATEX_HEADER: \usepackage{xcolor}
 #+LATEX_HEADER: \usepackage{sourcecodepro}
@@ -81,6 +81,77 @@
 #+LATEX_HEADER: }
 #+LATEX_HEADER: \renewcommand*{\UrlFont}{\ttfamily\smaller\relax}
 
+* Autotuning with D-Optimal Designs and Analysis of Variance
+1. Use ~optFederov~ to find 24 experiments for the full model:
+    \begin{align*}
+        Y = & \; y\_component\_number + 1 / y\_component\_number + \\
+            & \; vector\_length + lws\_y + 1 / lws\_y + \\
+            & \; load\_overlap + temporary\_size + \\
+            & \; elements\_number + 1 / elements\_number + \\
+            & \; threads\_number + 1 / threads\_number
+    \end{align*}
+2. Use ~aov~ to fit the full model, spending the 24 evaluations:
+    \begin{align*}
+          time\_per\_pixel = & \; y\_component\_number + 1 / y\_component\_number + \\
+                            & \; vector\_length + lws\_y + 1 / lws\_y + \\
+                            & \; load\_overlap + temporary\_size + \\
+                            & \; elements\_number + 1 / elements\_number + \\
+                            & \; threads\_number + 1 / threads\_number
+    \end{align*}
+4. Identify the most significant factors from the ANOVA summary. In this
+   case, they are $vector\_length$ and $lws\_y$.
+5. Use the fitted model to predict the best $time\_per\_pixel$ value in the
+   entire dataset
+6. Prune the dataset using the predicted best values for $vector\_length$ and $lws\_y$
+7. Use ~optFederov~ to find 24 experiments for the pruned model. If there are less
+   than or exactly 24 candidates, use the full candidate set.
+    \begin{align*}
+        Y = & \; y\_component\_number + 1 / y\_component\_number + \\
+            & \; load\_overlap + temporary\_size + \\
+            & \; elements\_number + 1 / elements\_number + \\
+            & \; threads\_number + 1 / threads\_number
+    \end{align*}
+8. Use ~aov~ to fit the pruned model, spending the 24 evaluations:
+    \begin{align*}
+          time\_per\_pixel = & \; y\_component\_number + 1 / y\_component\_number + \\
+                            & \; load\_overlap + temporary\_size + \\
+                            & \; elements\_number + 1 / elements\_number + \\
+                            & \; threads\_number + 1 / threads\_number
+    \end{align*}
+9. Identify the most significant factors from the ANOVA summary. In this
+   case, they are $y\_component\_number$ and $threads\_number$.
+10. Use the fitted model to predict the best $time\_per\_pixel$ value in the
+    entire dataset
+11. Prune the dataset using the predicted best values for $y\_component\_number$ and
+    $threads\_number$
+12. Use ~optFederov~ to find 24 experiments for the pruned model. If there are less
+    than or exactly 24 candidates, use the full candidate set.
+    \begin{align*}
+        Y = & \; load\_overlap + temporary\_size + \\
+            & \; elements\_number + 1 / elements\_number
+    \end{align*}
+13. Use ~aov~ to fit the pruned model, spending the 24 evaluations:
+    \begin{align*}
+          time\_per\_pixel = & \; load\_overlap + temporary\_size + \\
+                            & \; elements\_number + 1 / elements\_number
+    \end{align*}
+14. Identify the most significant factors from the ANOVA summary. In this
+    case, it is $elements\_number$
+15. Use the fitted model to predict the best $time\_per\_pixel$ value in the
+    entire dataset
+16. Prune the dataset using the predicted best values for $elements\_number$
+12. Use ~optFederov~ to find 24 experiments for the pruned model. If there are less
+    than or exactly 24 candidates, use the full candidate set.
+    \begin{align*}
+        Y = load\_overlap + temporary\_size
+    \end{align*}
+13. Use ~aov~ to fit the pruned model, spending the 24 evaluations:
+    \begin{align*}
+          time\_per\_pixel = load\_overlap + temporary\_size
+    \end{align*}
+15. Use the fitted model to predict the best $time\_per\_pixel$ value in the
+    entire dataset
+16. Compare the predicted $time\_per\_pixel$ with the global optimum
 * Results
 ** Comparing Strategies
    #+HEADER: :file ../img/comparison_histogram.pdf :exports results :width 7 :height 8
@@ -99,7 +170,7 @@
                      median = median(slowdown))
 
    df_err = ddply(df_all_methods,.(method), summarize,
-                 mean = mean(slowdown), err = 2 * sd(slowdown) / sqrt(length(slowdown)))
+                  mean = mean(slowdown), err = 2 * sd(slowdown) / sqrt(length(slowdown)))
 
    df_max = ddply(df_all_methods,.(method), summarize, max = max(slowdown))
 
@@ -107,7 +178,7 @@
        facet_grid(method~.) +
        theme_bw() +
        coord_cartesian(xlim = c(.9, 4), ylim = c(0, 1000)) +
-       geom_histogram(aes(slowdown),binwidth = .05, fill = "gray48") +
+       geom_histogram(aes(slowdown), binwidth = .05, fill = "gray48") +
        geom_curve(data = df_max, aes(x = max + .1, y = 500, xend = max, yend = 5), arrow = arrow(length = unit(0.05, "npc")), curvature = 0.3) +
        geom_text( aes(x = max+.2, y = 550, label = "max"), data = df_max ) +
        geom_rect(data = df_err, aes(xmin = mean-err, xmax = mean + err, ymin = 0, ymax = 1000, fill = "red"), alpha = 0.3) +
@@ -126,50 +197,60 @@
    #+BEGIN_SRC R
    library(xtable)
    summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))[ , 1],
-                                  mean(df_all_methods[df_all_methods$method == "RS",]$point_number)),
+                                  mean(df_all_methods[df_all_methods$method == "RS",]$point_number),
+                                  max(df_all_methods[df_all_methods$method == "LHS",]$point_number)),
                            LHS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LHS", ]$slowdown)))[ , 1],
-                                                             mean(df_all_methods[df_all_methods$method == "LHS",]$point_number)),
+                                   mean(df_all_methods[df_all_methods$method == "LHS",]$point_number),
+                                   max(df_all_methods[df_all_methods$method == "LHS",]$point_number)),
                            GS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GS", ]$slowdown)))[ , 1],
-                                                             mean(df_all_methods[df_all_methods$method == "GS",]$point_number)),
+                                  mean(df_all_methods[df_all_methods$method == "GS",]$point_number),
+                                                             max(df_all_methods[df_all_methods$method == "GS",]$point_number)),
                            GSR = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GSR", ]$slowdown)))[ , 1],
-                                                             mean(df_all_methods[df_all_methods$method == "GSR",]$point_number)),
+                                   mean(df_all_methods[df_all_methods$method == "GSR",]$point_number),
+                                   max(df_all_methods[df_all_methods$method == "GSR",]$point_number)),
                            GA = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GA", ]$slowdown)))[ , 1],
-                                                             mean(df_all_methods[df_all_methods$method == "GA",]$point_number)),
+                                  mean(df_all_methods[df_all_methods$method == "GA",]$point_number),
+                                  max(df_all_methods[df_all_methods$method == "GA",]$point_number)),
                            LM = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LM", ]$slowdown)))[ , 1],
-                                                             mean(df_all_methods[df_all_methods$method == "LM",]$point_number)),
+                                  mean(df_all_methods[df_all_methods$method == "LM",]$point_number),
+                                  max(df_all_methods[df_all_methods$method == "LM",]$point_number)),
                            RQ = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RQ", ]$slowdown)))[ , 1],
-                                                             mean(df_all_methods[df_all_methods$method == "RQ",]$point_number)),
+                                  mean(df_all_methods[df_all_methods$method == "RQ",]$point_number),
+                                  max(df_all_methods[df_all_methods$method == "RQ",]$point_number)),
                            DOPT = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPT", ]$slowdown)))[ , 1],
-                                                             mean(df_all_methods[df_all_methods$method == "DOPT",]$point_number)),
+                                    mean(df_all_methods[df_all_methods$method == "DOPT",]$point_number),
+                                    max(df_all_methods[df_all_methods$method == "DOPT",]$point_number)),
                            DOPTaov = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPTaov", ]$slowdown)))[ , 1],
-                                                             mean(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number)))
+                                       mean(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number),
+                                       max(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number)))
 
-   rownames(summaries) <- c(rownames(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))), "Mean Pt.")
+   rownames(summaries) <- c(rownames(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))), "Mean Pt.", "Max Pt.")
    x <- xtable(summaries, caption = "Summary statistics")
    align(x) <- xalign(x)
    display(x) <- display(x)
-   x
+   print(x, size = "\\small")
    #+END_SRC
 
    #+RESULTS:
    #+BEGIN_EXPORT latex
    % latex table generated in R 3.4.4 by xtable 1.8-2 package
-   % Thu May  3 13:42:54 2018
+   % Thu May  3 15:41:16 2018
    \begin{table}[ht]
    \centering
-   \begin{tabular}{rrrrrrrrr}
+   \begin{tabular}{lrrrrrrrrr}
      \hline
-    & RS & LHS & GS & GSR & GA & LM & RQ & DOPTaov \\ 
+    & RS & LHS & GS & GSR & GA & LM & RQ & DOPT & DOPTaov \\ 
      \hline
-   Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 \\ 
-     1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.01 \\ 
-     Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.01 & 1.01 \\ 
-     Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.02 & 1.01 \\ 
-     3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.01 & 1.01 \\ 
-     Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 2.06 & 1.08 \\ 
-     Budget Mean & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 119.00 & 54.85 \\ 
+   Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.38 & 1.01 \\ 
+     1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
+     Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
+     Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.02 & 1.68 & 1.01 \\ 
+     3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
+     Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 2.06 & 2.91 & 1.08 \\ 
+     Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 54.85 \\ 
+     Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 56.00 \\ 
       \hline
    \end{tabular}
+   \caption{Summary statistics} 
    \end{table}
    #+END_EXPORT
-   
