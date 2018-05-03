@@ -36,7 +36,7 @@ for (i in 1:iterations) {
     # sampled_data <- scaled_data[sample(nrow(data), 500), ]
 
     # Complete model:
-    output <- optFederov(~ y_component_number + I(1 / y_component_number) + 
+    output <- optFederov(~ y_component_number + I(1 / y_component_number) +
                            vector_length + lws_y + I(1 / lws_y) +
                            load_overlap + temporary_size +
                            elements_number + I(1 / elements_number) +
@@ -51,7 +51,7 @@ for (i in 1:iterations) {
     # str(federov_design)
 
     # Complete model:
-    regression <- aov(time_per_pixel ~ y_component_number + I(1 / y_component_number) + 
+    regression <- aov(time_per_pixel ~ y_component_number + I(1 / y_component_number) +
                                        vector_length + lws_y + I(1 / lws_y) +
                                        load_overlap + temporary_size +
                                        elements_number + I(1 / elements_number) +
@@ -75,7 +75,7 @@ for (i in 1:iterations) {
     scaled_data <- data[, factors]
 
     if (nrow(scaled_data) > 18) {
-        output <- optFederov(~ y_component_number + I(1 / y_component_number) + 
+        output <- optFederov(~ y_component_number + I(1 / y_component_number) +
                                load_overlap + temporary_size +
                                elements_number + I(1 / elements_number) +
                                threads_number + I(1 / threads_number),
@@ -94,7 +94,7 @@ for (i in 1:iterations) {
     # str(data)
     # str(federov_design)
 
-    regression <- aov(time_per_pixel ~ y_component_number + I(1 / y_component_number) + 
+    regression <- aov(time_per_pixel ~ y_component_number + I(1 / y_component_number) +
                                        load_overlap + temporary_size +
                                        elements_number + I(1 / elements_number) +
                                        threads_number + I(1 / threads_number),
