@@ -88,9 +88,9 @@
    library(ggplot2)
    library(plyr)
 
-   df_all_methods <- read.csv("../data/testing_1000.csv", strip.white=T, header=T)
+   df_all_methods <- read.csv("../data/testing_1000.csv", strip.white = T, header = T)
 
-   df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM","RQ", "DOPTaov"))
+   df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM","RQ", "DOPT", "DOPTaov"))
 
    df_mean = ddply(df_all_methods,.(method), summarize,
                    mean = mean(slowdown))
@@ -99,24 +99,24 @@
                      median = median(slowdown))
 
    df_err = ddply(df_all_methods,.(method), summarize,
-                 mean = mean(slowdown), err = 2*sd(slowdown)/sqrt(length(slowdown)))
+                 mean = mean(slowdown), err = 2 * sd(slowdown) / sqrt(length(slowdown)))
 
    df_max = ddply(df_all_methods,.(method), summarize, max = max(slowdown))
 
    ggplot(df_all_methods ) +
        facet_grid(method~.) +
        theme_bw() +
-       coord_cartesian(xlim=c(.9,4), ylim=c(0,1000)) +
-       geom_histogram(aes(slowdown),binwidth=.05, fill="gray48") +
-       geom_curve(data=df_max, aes(x=max+.1, y=500, xend=max, yend=5), arrow = arrow(length = unit(0.05, "npc")), curvature=0.3) +
-       geom_text( aes(x=max+.2,y=550,label="max"),data=df_max ) +
-       geom_rect(data = df_err, aes(xmin=mean-err, xmax=mean+err, ymin=0, ymax=1000, fill="red"), alpha=0.3) +
-       geom_vline( aes(xintercept = median), df_median, color="darkgreen", linetype=3 ) +
-       geom_vline( aes(xintercept = mean), df_mean, color="red", linetype=2 ) +
-       labs(y="Frequency", x="Slowdown compared to the optimal solution") +
-       scale_fill_discrete(name="",breaks=c("red"), labels=c("Mean error")) +
+       coord_cartesian(xlim = c(.9, 4), ylim = c(0, 1000)) +
+       geom_histogram(aes(slowdown),binwidth = .05, fill = "gray48") +
+       geom_curve(data = df_max, aes(x = max + .1, y = 500, xend = max, yend = 5), arrow = arrow(length = unit(0.05, "npc")), curvature = 0.3) +
+       geom_text( aes(x = max+.2, y = 550, label = "max"), data = df_max ) +
+       geom_rect(data = df_err, aes(xmin = mean-err, xmax = mean + err, ymin = 0, ymax = 1000, fill = "red"), alpha = 0.3) +
+       geom_vline( aes(xintercept = median), df_median, color = "darkgreen", linetype = 3 ) +
+       geom_vline( aes(xintercept = mean), df_mean, color = "red", linetype = 2 ) +
+       labs(y = "Frequency", x = "Slowdown compared to the optimal solution") +
+       scale_fill_discrete(name = "",breaks = c("red"), labels = c("Mean error")) +
        ggtitle("") +
-       theme(legend.position="top")
+       theme(legend.position = "top")
    #+END_SRC
 
    #+RESULTS:
@@ -139,6 +139,8 @@
                                                              mean(df_all_methods[df_all_methods$method == "LM",]$point_number)),
                            RQ = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RQ", ]$slowdown)))[ , 1],
                                                              mean(df_all_methods[df_all_methods$method == "RQ",]$point_number)),
+                           DOPT = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPT", ]$slowdown)))[ , 1],
+                                                             mean(df_all_methods[df_all_methods$method == "DOPT",]$point_number)),
                            DOPTaov = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPTaov", ]$slowdown)))[ , 1],
                                                              mean(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number)))
 
