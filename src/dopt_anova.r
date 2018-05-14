@@ -13,7 +13,7 @@ check_prediction <- function(regression, prediction, target_size) {
 complete_data = read.csv("../data/search_space.csv", header = TRUE)
 # str(complete_data)
 
-accuracies_file <- "../data/dopt_accuracies.csv"
+accuracies_file <- "../data/testing_dopt_accuracies.csv"
 read_file <- "../data/old_complete_1000.csv"
 write_file <- "../data/testing_1000.csv"
 
@@ -21,7 +21,7 @@ results <- read.csv(read_file, strip.white=T, header=T)
 
 budget <- 120
 
-iterations <- 1000
+iterations <- 10
 
 factors = c("elements_number", "y_component_number",
             "vector_length", "temporary_size",
