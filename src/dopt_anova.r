@@ -7,7 +7,6 @@ check_prediction <- function(regression, prediction, target_size) {
   predicted_effects <- data.frame(t(predicted_effects), check.names = FALSE)
 
   ordered_effects <- names(predicted_effects[ , order(predicted_effects[1, ])])
-  str(prediction %in% ordered_effects[1:target_size])
   return(prediction %in% ordered_effects[1:target_size])
 }
 
@@ -22,7 +21,7 @@ results <- read.csv(read_file, strip.white=T, header=T)
 
 budget <- 120
 
-iterations <- 500
+iterations <- 1000
 
 factors = c("elements_number", "y_component_number",
             "vector_length", "temporary_size",
