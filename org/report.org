@@ -81,14 +81,11 @@
 #+LATEX_HEADER: }
 #+LATEX_HEADER: \renewcommand*{\UrlFont}{\ttfamily\smaller\relax}
 
-* Setup                                                            :noexport:
+* Setup: Generating the Data                                       :noexport:
 #+HEADER: :exports none
 #+BEGIN_SRC shell
 Rscript ../src/dopt_anova.r
 #+END_SRC
-
-#+RESULTS:
-: test
 
 * Autotuning with D-Optimal Designs and Analysis of Variance
 1. Use ~optFederov~ to find 24 experiments for the full model:
@@ -204,48 +201,49 @@ ggplot(df_all_methods ) +
 
 #+HEADER: :results output latex :session *R* :exports results
 #+BEGIN_SRC R
-   library(xtable)
-   summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))[ , 1],
-                                  mean(df_all_methods[df_all_methods$method == "RS",]$point_number),
-                                  max(df_all_methods[df_all_methods$method == "LHS",]$point_number)),
-                           LHS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LHS", ]$slowdown)))[ , 1],
-                                   mean(df_all_methods[df_all_methods$method == "LHS",]$point_number),
-                                   max(df_all_methods[df_all_methods$method == "LHS",]$point_number)),
-                           GS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GS", ]$slowdown)))[ , 1],
-                                  mean(df_all_methods[df_all_methods$method == "GS",]$point_number),
-                                                             max(df_all_methods[df_all_methods$method == "GS",]$point_number)),
-                           GSR = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GSR", ]$slowdown)))[ , 1],
-                                   mean(df_all_methods[df_all_methods$method == "GSR",]$point_number),
-                                   max(df_all_methods[df_all_methods$method == "GSR",]$point_number)),
-                           GA = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GA", ]$slowdown)))[ , 1],
-                                  mean(df_all_methods[df_all_methods$method == "GA",]$point_number),
-                                  max(df_all_methods[df_all_methods$method == "GA",]$point_number)),
-                           LM = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LM", ]$slowdown)))[ , 1],
-                                  mean(df_all_methods[df_all_methods$method == "LM",]$point_number),
-                                  max(df_all_methods[df_all_methods$method == "LM",]$point_number)),
-                           RQ = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RQ", ]$slowdown)))[ , 1],
-                                  mean(df_all_methods[df_all_methods$method == "RQ",]$point_number),
-                                  max(df_all_methods[df_all_methods$method == "RQ",]$point_number)),
-                           DOPT = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPT", ]$slowdown)))[ , 1],
-                                    mean(df_all_methods[df_all_methods$method == "DOPT",]$point_number),
-                                    max(df_all_methods[df_all_methods$method == "DOPT",]$point_number)),
-                           DOPTaov = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPTaov", ]$slowdown)))[ , 1],
-                                       mean(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number),
-                                       max(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number)))
+library(xtable)
+summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))[ , 1],
+                              mean(df_all_methods[df_all_methods$method == "RS",]$point_number),
+                              max(df_all_methods[df_all_methods$method == "LHS",]$point_number)),
+                        LHS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LHS", ]$slowdown)))[ , 1],
+                                mean(df_all_methods[df_all_methods$method == "LHS",]$point_number),
+                                max(df_all_methods[df_all_methods$method == "LHS",]$point_number)),
+                        GS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GS", ]$slowdown)))[ , 1],
+                              mean(df_all_methods[df_all_methods$method == "GS",]$point_number),
+                                                          max(df_all_methods[df_all_methods$method == "GS",]$point_number)),
+                        GSR = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GSR", ]$slowdown)))[ , 1],
+                                mean(df_all_methods[df_all_methods$method == "GSR",]$point_number),
+                                max(df_all_methods[df_all_methods$method == "GSR",]$point_number)),
+                        GA = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GA", ]$slowdown)))[ , 1],
+                              mean(df_all_methods[df_all_methods$method == "GA",]$point_number),
+                              max(df_all_methods[df_all_methods$method == "GA",]$point_number)),
+                        LM = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LM", ]$slowdown)))[ , 1],
+                              mean(df_all_methods[df_all_methods$method == "LM",]$point_number),
+                              max(df_all_methods[df_all_methods$method == "LM",]$point_number)),
+                        RQ = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RQ", ]$slowdown)))[ , 1],
+                              mean(df_all_methods[df_all_methods$method == "RQ",]$point_number),
+                              max(df_all_methods[df_all_methods$method == "RQ",]$point_number)),
+                        DOPT = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPT", ]$slowdown)))[ , 1],
+                                mean(df_all_methods[df_all_methods$method == "DOPT",]$point_number),
+                                max(df_all_methods[df_all_methods$method == "DOPT",]$point_number)),
+                        DOPTaov = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPTaov", ]$slowdown)))[ , 1],
+                                    mean(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number),
+                                    max(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number)))
 
-   rownames(summaries) <- c(rownames(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))), "Mean Pt.", "Max Pt.")
-   x <- xtable(summaries, caption = "Summary statistics")
-   align(x) <- xalign(x)
-   display(x) <- display(x)
-   print(x, size = "\\small")
+rownames(summaries) <- c(rownames(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))), "Mean Pt.", "Max Pt.")
+x <- xtable(summaries, caption = "Summary statistics")
+align(x) <- xalign(x)
+display(x) <- display(x)
+print(x, size = "\\small")
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_EXPORT latex
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Thu May  3 15:41:16 2018
+% Mon May 14 16:48:30 2018
 \begin{table}[ht]
 \centering
+\begingroup\small
 \begin{tabular}{lrrrrrrrrr}
   \hline
  & RS & LHS & GS & GSR & GA & LM & RQ & DOPT & DOPTaov \\ 
@@ -260,6 +258,363 @@ Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.38 & 1.01 \\
   Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 56.00 \\ 
    \hline
 \end{tabular}
+\endgroup
 \caption{Summary statistics} 
 \end{table}
 #+END_EXPORT
+** Comparing Models
+#+HEADER: :file ../img/model_comparison.pdf :exports results :width 9 :height 13
+#+HEADER: :results graphics output :session *R*
+#+BEGIN_SRC R
+library(AlgDesign)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+
+generate_model_plot <- function(big_model, small_model, results, full_data, metric) {
+    bm_predict = data.frame(response = predict(big_model, results),
+                            variable = results[metric])
+
+    names(bm_predict)[names(bm_predict) == "response"] <- "time_per_pixel"
+    names(bm_predict)[names(bm_predict) == "variable"] <- metric
+
+    sm_predict = data.frame(response = predict(small_model, results),
+                            variable = results[metric])
+
+    names(sm_predict)[names(sm_predict) == "response"] <- "time_per_pixel"
+    names(sm_predict)[names(sm_predict) == "variable"] <- metric
+
+    bm_min = bm_predict[bm_predict$time_per_pixel == min(bm_predict$time_per_pixel), ]
+
+    sm_min = sm_predict[sm_predict$time_per_pixel == min(sm_predict$time_per_pixel), ]
+
+    sm_min = sm_min[1, ]
+    bm_min = bm_min[1, ]
+
+    global_min = full_data[full_data$time_per_pixel == min(full_data$time_per_pixel),
+                           c("time_per_pixel", metric)]
+
+    sampled_data <- full_data[sample(1:nrow(full_data), 1000, replace = FALSE), ]
+
+    p <- ggplot() + 
+         scale_shape_identity() +
+         geom_point(data = sampled_data, alpha = 0.3,
+                    aes(x = sampled_data[metric], y = time_per_pixel,
+                        color = "Search Space")) +
+         geom_point(data = bm_min, size = 3, alpha = 1.0,
+                    aes(x = bm_min[metric], y = time_per_pixel,
+                        color = "Big Model", shape = 7)) +
+         geom_point(data = sm_min, size = 3, alpha = 1.0,
+                    aes(x = sm_min[metric], y = time_per_pixel,
+                        color = "Small Model", shape = 8)) +
+         geom_point(data = global_min, size = 3, alpha = 1.0,
+                    aes(x = global_min[metric], y = time_per_pixel,
+                        color = "Minimum", shape = 9)) +
+         theme_bw() + 
+         theme(axis.text = element_text(size = 8),
+               axis.title = element_text(size = 9, face = "bold"),
+               legend.position = "bottom",
+               plot.title = element_text(size = 10, face = "bold"),
+               legend.title = element_blank()) +
+         labs(y = "time_per_pixel", x = metric) +
+         scale_color_manual(values = c("green", "blue", "black", "red"))
+
+    return(p)
+}
+
+complete_data = read.csv("../data/search_space.csv", header = TRUE)
+
+budget <- 120
+
+factors = c("elements_number", "y_component_number",
+            "vector_length", "temporary_size",
+            "load_overlap", "threads_number",
+            "lws_y")
+
+used <- 0
+
+data <- complete_data[, c(factors, "time_per_pixel")]
+scaled_data <- data[, factors]
+
+# Comment/Uncomment to toggle scaling
+
+# scaled_data <- cbind(scale(select_if(data, is.numeric), center = FALSE, scale = TRUE),
+#                      select_if(data, Negate(is.numeric)))
+# scaled_data <- scaled_data[, names(data)]
+
+# We are able to use the full set in this case
+# sampled_data <- scaled_data[sample(nrow(data), 500), ]
+
+# Complete model:
+output <- optFederov(~ y_component_number + I(1 / y_component_number) +
+                        vector_length + lws_y + I(1 / lws_y) +
+                        load_overlap + temporary_size +
+                        elements_number + I(1 / elements_number) +
+                        threads_number + I(1 / threads_number),
+                      scaled_data,
+                      nTrials = 24)
+
+federov_design <- data[output$rows, ]
+experiments <- output$rows
+
+# Complete model:
+regression <- aov(time_per_pixel ~ y_component_number + I(1 / y_component_number) +
+                                   vector_length + lws_y + I(1 / lws_y) +
+                                   load_overlap + temporary_size +
+                                   elements_number + I(1 / elements_number) +
+                                   threads_number + I(1 / threads_number),
+                  data = federov_design)
+
+small_model <- lm(time_per_pixel ~ vector_length + lws_y + I(1 / lws_y),
+                  data = federov_design)
+
+p_vectorlength <- generate_model_plot(regression, small_model,
+                                      scaled_data, complete_data[ , c(factors, "time_per_pixel")],
+                                      "vector_length")
+
+p_lwsy <- generate_model_plot(regression, small_model,
+                              scaled_data, complete_data[ , c(factors, "time_per_pixel")],
+                              "lws_y")
+
+random_data <- complete_data[sample(nrow(complete_data), nrow(federov_design)), c(factors, "time_per_pixel")]
+
+big_random <- lm(time_per_pixel ~ y_component_number + I(1 / y_component_number) +
+                                  vector_length + lws_y + I(1 / lws_y) +
+                                  load_overlap + temporary_size +
+                                  elements_number + I(1 / elements_number) +
+                                  threads_number + I(1 / threads_number),
+                 data = random_data)
+
+small_random <- lm(time_per_pixel ~ vector_length + lws_y + I(1 / lws_y),
+                   data = random_data)
+
+
+r_lwsy <- generate_model_plot(big_random, small_random,
+                              random_data, complete_data[ , c(factors, "time_per_pixel")],
+                              "lws_y")
+
+r_vectorlength <- generate_model_plot(big_random, small_random,
+                                      random_data, complete_data[ , c(factors, "time_per_pixel")],
+                                      "vector_length")
+
+used <- used + nrow(federov_design)
+
+# Checking the ANOVA summary we can identify at least two variables
+# that seem to have greater impact: 'vector_length' and 'lws_y'.
+# Let's fix those variables to their best predicted value so far,
+# then fit a new model without them
+
+predicted_best <- data[predict(regression, data) == min(predict(regression, data)), ]
+
+data <- complete_data[complete_data$vector_length == predicted_best$vector_length &
+                      complete_data$lws_y == predicted_best$lws_y, c(factors, "time_per_pixel")]
+scaled_data <- data[, factors]
+
+if (nrow(scaled_data) > 18) {
+    output <- optFederov(~ y_component_number + I(1 / y_component_number) +
+                           load_overlap + temporary_size +
+                           elements_number + I(1 / elements_number) +
+                           threads_number + I(1 / threads_number),
+                         scaled_data,
+                         nTrials = 18)
+
+    federov_design <- data[output$rows, ]
+} else {
+    federov_design <- data
+}
+
+used_rows <- rownames(federov_design)[!(rownames(federov_design) %in% experiments)]
+used <- used + nrow(federov_design[used_rows, ])
+experiments <- c(experiments, output$rows[!(output$rows %in% experiments)])
+
+regression <- aov(time_per_pixel ~ y_component_number + I(1 / y_component_number) +
+                                   load_overlap + temporary_size +
+                                   elements_number + I(1 / elements_number) +
+                                   threads_number + I(1 / threads_number),
+                  data = federov_design)
+
+small_model <- lm(time_per_pixel ~ y_component_number + I(1 / y_component_number) +
+                                   threads_number + I(1 / threads_number),
+                  data = federov_design)
+
+p_ycomponentnumber <- generate_model_plot(regression, small_model,
+                                          scaled_data, complete_data[ , c(factors, "time_per_pixel")],
+                                          "y_component_number")
+
+p_threadsnumber <- generate_model_plot(regression, small_model,
+                                       scaled_data, complete_data[ , c(factors, "time_per_pixel")],
+                                       "threads_number")
+
+random_data <- complete_data[sample(nrow(complete_data), nrow(federov_design)), c(factors, "time_per_pixel")]
+
+big_random <- lm(time_per_pixel ~ y_component_number + I(1 / y_component_number) +
+                                  load_overlap + temporary_size +
+                                  elements_number + I(1 / elements_number) +
+                                  threads_number + I(1 / threads_number),
+                 data = random_data)
+
+small_random <- lm(time_per_pixel ~ y_component_number + I(1 / y_component_number) +
+                                    threads_number + I(1 / threads_number),
+                   data = random_data)
+
+
+r_ycomponentnumber <- generate_model_plot(big_random, small_random,
+                                          random_data, complete_data[ , c(factors, "time_per_pixel")],
+                                          "y_component_number")
+
+r_threadsnumber <- generate_model_plot(big_random, small_random,
+                                       random_data, complete_data[ , c(factors, "time_per_pixel")],
+                                       "threads_number")
+
+# Checking the ANOVA summary we can identify at least two variables
+# that seem to have greater impact: 'y_component_number' and 'threads_number'.
+# Let's fix those variables to their best predicted value so far,
+# then fit a new model without them
+
+predicted_best <- data[predict(regression, data) == min(predict(regression, data)), ]
+
+data <- complete_data[complete_data$vector_length == predicted_best$vector_length &
+                      complete_data$lws_y == predicted_best$lws_y &
+                      complete_data$y_component_number == predicted_best$y_component_number &
+                      complete_data$threads_number == predicted_best$threads_number, c(factors, "time_per_pixel")]
+scaled_data <- data[, factors]
+
+if (nrow(scaled_data) > 10) {
+    output <- optFederov(~ load_overlap + temporary_size +
+                            elements_number + I(1 / elements_number),
+                          scaled_data,
+                          nTrials = 10)
+
+    federov_design <- data[output$rows, ]
+} else {
+    federov_design <- data
+}
+
+used_rows <- rownames(federov_design)[!(rownames(federov_design) %in% experiments)]
+used <- used + nrow(federov_design[used_rows, ])
+experiments <- c(experiments, output$rows[!(output$rows %in% experiments)])
+
+regression <- aov(time_per_pixel ~ load_overlap + temporary_size +
+                                    elements_number + I(1 / elements_number),
+                  data = federov_design)
+
+small_model <- lm(time_per_pixel ~ elements_number + I(1 / elements_number),
+                  data = federov_design)
+
+p_elementsnumber <- generate_model_plot(regression, small_model,
+                                        scaled_data, complete_data[ , c(factors, "time_per_pixel")],
+                                        "elements_number")
+
+random_data <- complete_data[sample(nrow(complete_data), nrow(federov_design)), c(factors, "time_per_pixel")]
+
+big_random <- lm(time_per_pixel ~ load_overlap + temporary_size +
+                                  elements_number + I(1 / elements_number),
+                 data = random_data)
+
+small_random <- lm(time_per_pixel ~ elements_number + I(1 / elements_number),
+                   data = random_data)
+
+r_elementsnumber <- generate_model_plot(big_random, small_random,
+                                        random_data, complete_data[ , c(factors, "time_per_pixel")],
+                                        "elements_number")
+
+# Checking the ANOVA summary we can identify, at last, one variable
+# that seem to have greater impact: 'elements_number'
+# Let's fix it to their best predicted value so far,
+# then fit a new model without it
+
+predicted_best <- data[predict(regression, data) == min(predict(regression, data)), ]
+
+data <- complete_data[complete_data$vector_length == predicted_best$vector_length &
+                      complete_data$lws_y == predicted_best$lws_y &
+                      complete_data$y_component_number == predicted_best$y_component_number &
+                      complete_data$threads_number == predicted_best$threads_number &
+                      complete_data$elements_number == predicted_best$elements_number, c(factors, "time_per_pixel")]
+scaled_data <- data[, factors]
+
+if (nrow(scaled_data) > 6) {
+    output <- optFederov(~ load_overlap + temporary_size,
+                          scaled_data,
+                          nTrials = 6)
+
+    federov_design <- data[output$rows, ]
+} else {
+    federov_design <- data
+}
+
+used_rows <- rownames(federov_design)[!(rownames(federov_design) %in% experiments)]
+used <- used + nrow(federov_design[used_rows, ])
+experiments <- c(experiments, output$rows[!(output$rows %in% experiments)])
+
+regression <- aov(time_per_pixel ~ load_overlap + temporary_size,
+                  data = federov_design)
+
+predicted_best <- data[predict(regression, data) == min(predict(regression, data)), ]
+
+best <- complete_data[complete_data$time_per_pixel == min(complete_data$time_per_pixel), ]
+best_row <- rownames(best)
+
+predicted_best$slowdown <- predicted_best$time_per_pixel / best$time_per_pixel
+predicted_best$method <- rep("DOPTaov", nrow(predicted_best))
+predicted_best$point_number <- rep(used, nrow(predicted_best))
+predicted_best$vector_recompute <- rep("true", nrow(predicted_best))
+
+predicted_best <- predicted_best[, c("elements_number", "y_component_number",
+                                    "vector_length", "temporary_size", "vector_recompute",
+                                    "load_overlap", "threads_number", "lws_y",
+                                    "time_per_pixel", "point_number", "method",
+                                    "slowdown")]
+
+grid.arrange(p_vectorlength + ggtitle("First Step: D-Opt + aov") , p_lwsy + ggtitle(" "),
+             r_vectorlength + ggtitle("First Step: Random Selection + lm"), r_lwsy + ggtitle(" "),
+             p_ycomponentnumber + ggtitle("Second Step: D-Opt + aov"), p_threadsnumber + ggtitle(" "),
+             r_ycomponentnumber + ggtitle("Second Step: Random Selection + lm"), r_threadsnumber + ggtitle(" "),
+             p_elementsnumber + ggtitle("Third Step: D-Opt + aov"),
+             r_elementsnumber + ggtitle("Third Step: Random Selection + lm"), nrow = 5)
+#+END_SRC
+
+#+RESULTS:
+[[file:../img/model_comparison.pdf]]
+** Checking Accuracy
+To verify the "accuracy" of the selected metrics, I adapted the experiment
+scripts to check for each removed model variable in the actual =aov= summary.
+Those initial choices seem to match in most cases with the variables identified
+as most relevant by the =aov= summary, as shown below.
+
+#+HEADER: :file ../img/accuracy.pdf :exports results :width 4 :height 3
+#+HEADER: :results graphics output :session *R*
+#+BEGIN_SRC R
+library(ggplot2)
+
+accuracies_file <- "../data/dopt_accuracies.csv"
+results <- read.csv(accuracies_file, strip.white=T, header=T)
+
+names(results) <- c("First", "Second", "Third")
+parsed_results = data.frame(names(results), t(results[1, ]))
+names(parsed_results) <- c("Steps", "Accuracy")
+
+parsed_results
+
+ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
+geom_bar(stat = "identity", width = 0.5) +
+#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
+geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
+theme_bw() +
+theme(axis.text = element_text(size = 6),
+      axis.title = element_text(size = 7, face = "bold"))
+#+END_SRC
+
+#+RESULTS:
+[[file:../img/accuracy.pdf]]
+
+As described previously, at each step a group of variables is removed from the
+model based on their "score", that is, the "Pr(>F)" value in the =aov= summary.
+I selected at most two variables at each of the three steps, based on preliminary
+visual analysis of the =aov= summaries.
+
+To measure how accurate those initial selections were I checked at each step if
+the $n$ selected variables were in the $n$ most relevant variables in that
+step's =aov= summary. If that was the case I incremented a step-specific
+counter. The counters were updated for 1000 iterations and then divided by 1000.
+This value represents the accuracy of the static selection in comparison with
+the values that would be selected if each individual =aov= summary was analysed.

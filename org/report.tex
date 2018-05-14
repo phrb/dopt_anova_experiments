@@ -1,4 +1,4 @@
-% Created 2018-05-14 Mon 15:45
+% Created 2018-05-14 Mon 16:52
 % Intended LaTeX compiler: pdflatex
 \documentclass[final,12pt,a4paper]{article}
 
@@ -82,7 +82,7 @@ tabsize=2,
 
 
 \section{Autotuning with D-Optimal Designs and Analysis of Variance}
-\label{sec:org69e1f88}
+\label{sec:org26cba77}
 \begin{enumerate}
 \item Use \texttt{optFederov} to find 24 experiments for the full model:
 \begin{align*}
@@ -156,15 +156,15 @@ entire dataset
 \item Compare the predicted \(time\_per\_pixel\) with the global optimum
 \end{enumerate}
 \section{Results}
-\label{sec:org28cf8ac}
+\label{sec:org0ce51ee}
 \subsection{Comparing Strategies}
-\label{sec:orgb5bb271}
+\label{sec:orgdab4dc2}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/comparison_histogram.pdf}
 \end{center}
 
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Mon May 14 15:45:41 2018
+% Mon May 14 16:52:48 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
@@ -175,14 +175,41 @@ entire dataset
 Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.38 & 1.01 \\ 
   1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
   Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
-  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.02 & 1.68 & 1.02 \\ 
+  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.02 & 1.68 & 1.01 \\ 
   3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
   Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 2.06 & 2.91 & 1.08 \\ 
-  Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 68.00 \\ 
-  Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 68.00 \\ 
+  Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 54.85 \\ 
+  Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 56.00 \\ 
    \hline
 \end{tabular}
 \endgroup
 \caption{Summary statistics} 
 \end{table}
+\subsection{Comparing Models}
+\label{sec:orgbe2762b}
+\begin{center}
+\includegraphics[width=.9\linewidth]{../img/model_comparison.pdf}
+\end{center}
+\subsection{Checking Accuracy}
+\label{sec:orga079bf2}
+To verify the "accuracy" of the selected metrics, I adapted the experiment
+scripts to check for each removed model variable in the actual \texttt{aov} summary.
+Those initial choices seem to match in most cases with the variables identified
+as most relevant by the \texttt{aov} summary, as shown below.
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{../img/accuracy.pdf}
+\end{center}
+
+As described previously, at each step a group of variables is removed from the
+model based on their "score", that is, the "Pr(>F)" value in the \texttt{aov} summary.
+I selected at most two variables at each of the three steps, based on preliminary
+visual analysis of the \texttt{aov} summaries.
+
+To measure how accurate those initial selections were I checked at each step if
+the \(n\) selected variables were in the \(n\) most relevant variables in that
+step's \texttt{aov} summary. If that was the case I incremented a step-specific
+counter. The counters were updated for 1000 iterations and then divided by 1000.
+This value represents the accuracy of the static selection in comparison with
+the values that would be selected if each individual \texttt{aov} summary was analysed.
 \end{document}
