@@ -172,7 +172,7 @@ library(plyr)
 
 df_all_methods <- read.csv("../data/complete_1000.csv", strip.white = T, header = T)
 
-df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM", "LM_bm","RQ", "DOPT", "DOPTaov"))
+df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM", "LM_bm","RQ", "DOPT", "DOPTaov", "DOPTaov_t"))
 
 df_mean = ddply(df_all_methods,.(method), summarize,
                 mean = mean(slowdown))
@@ -215,7 +215,7 @@ summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_a
                                 max(df_all_methods[df_all_methods$method == "LHS",]$point_number)),
                         GS = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GS", ]$slowdown)))[ , 1],
                               mean(df_all_methods[df_all_methods$method == "GS",]$point_number),
-                                                          max(df_all_methods[df_all_methods$method == "GS",]$point_number)),
+                              max(df_all_methods[df_all_methods$method == "GS",]$point_number)),
                         GSR = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "GSR", ]$slowdown)))[ , 1],
                                 mean(df_all_methods[df_all_methods$method == "GSR",]$point_number),
                                 max(df_all_methods[df_all_methods$method == "GSR",]$point_number)),
@@ -236,7 +236,10 @@ summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_a
                                 max(df_all_methods[df_all_methods$method == "DOPT",]$point_number)),
                         DOPTaov = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPTaov", ]$slowdown)))[ , 1],
                                     mean(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number),
-                                    max(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number)))
+                                    max(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number)),
+                        DOPTaov_t = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPTaov_t", ]$slowdown)))[ , 1],
+                                    mean(df_all_methods[df_all_methods$method == "DOPTaov_t",]$point_number),
+                                    max(df_all_methods[df_all_methods$method == "DOPTaov_t",]$point_number)))
 
 rownames(summaries) <- c(rownames(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))), "Mean Pt.", "Max Pt.")
 x <- xtable(summaries, caption = "Summary statistics")
@@ -248,22 +251,23 @@ print(x, size = "\\small")
 #+RESULTS:
 #+BEGIN_EXPORT latex
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Tue May 15 14:00:54 2018
+% Tue May 15 22:06:10 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
 \begin{tabular}{lrrrrrrrrrr}
   \hline
- & RS & LHS & GS & GSR & GA & LM & LM\_bm & RQ & DOPT & DOPTaov \\ 
+ & RS & LHS & GS & GSR & LM & LM\_bm & RQ & DOPT & DOPTaov & DOPTaov\_t \\ 
   \hline
-Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 \\ 
-  1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
-  Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 \\ 
-  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.03 & 1.02 & 1.68 & 1.01 \\ 
-  3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 \\ 
-  Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 3.80 & 2.06 & 2.91 & 1.08 \\ 
-  Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 104.81 & 119.00 & 120.00 & 54.85 \\ 
-  Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 106.00 & 119.00 & 120.00 & 56.00 \\ 
+Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 & 1.01 \\ 
+  1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.01 & 1.01 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
+  Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
+  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.02 & 1.03 & 1.02 & 1.68 & 1.01 & 1.01 \\ 
+  3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
+  Max. & 1.39 & 1.52 & 124.76 & 3.16 & 3.77 & 3.80 & 2.06 & 2.91 & 1.08 & 1.01 \\ 
+  NA's & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 \\ 
+  Mean Pt. &  &  &  &  &  &  &  &  &  &  \\ 
+  Max Pt. &  &  &  &  &  &  &  &  &  &  \\ 
    \hline
 \end{tabular}
 \endgroup

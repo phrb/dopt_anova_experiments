@@ -1,4 +1,4 @@
-% Created 2018-05-15 Tue 14:43
+% Created 2018-05-15 Tue 22:09
 % Intended LaTeX compiler: pdflatex
 \documentclass[final,12pt,a4paper]{article}
 
@@ -82,7 +82,7 @@ tabsize=2,
 
 
 \section{Autotuning with D-Optimal Designs and Analysis of Variance}
-\label{sec:org6cd7220}
+\label{sec:orgb4df676}
 \begin{enumerate}
 \item Use \texttt{optFederov} to find 24 experiments for the full model:
 \begin{align*}
@@ -156,42 +156,42 @@ entire dataset
 \item Compare the predicted \(time\_per\_pixel\) with the global optimum
 \end{enumerate}
 \section{Results}
-\label{sec:org3db5041}
+\label{sec:orgbb092d2}
 \subsection{Comparing Strategies}
-\label{sec:orgc2e1471}
+\label{sec:org8b4fd96}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/comparison_histogram.pdf}
 \end{center}
 
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Tue May 15 14:43:41 2018
+% Tue May 15 22:09:37 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
-\begin{tabular}{lrrrrrrrrrr}
+\begin{tabular}{lrrrrrrrrrrr}
   \hline
- & RS & LHS & GS & GSR & GA & LM & LM\_bm & RQ & DOPT & DOPTaov \\ 
+ & RS & LHS & GS & GSR & GA & LM & LM\_bm & RQ & DOPT & DOPTaov & DOPTaov\_t \\ 
   \hline
-Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 \\ 
-  1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
-  Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 \\ 
-  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.03 & 1.02 & 1.68 & 1.01 \\ 
-  3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 \\ 
-  Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 3.80 & 2.06 & 2.91 & 1.08 \\ 
-  Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 104.81 & 119.00 & 120.00 & 54.85 \\ 
-  Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 106.00 & 119.00 & 120.00 & 56.00 \\ 
+Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 & 1.01 \\ 
+  1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
+  Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
+  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.03 & 1.02 & 1.68 & 1.01 & 1.01 \\ 
+  3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
+  Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 3.80 & 2.06 & 2.91 & 1.08 & 1.01 \\ 
+  Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 104.81 & 119.00 & 120.00 & 54.85 & 54.84 \\ 
+  Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 106.00 & 119.00 & 120.00 & 56.00 & 56.00 \\ 
    \hline
 \end{tabular}
 \endgroup
 \caption{Summary statistics} 
 \end{table}
 \subsection{Comparing Models}
-\label{sec:org05a34b8}
+\label{sec:org64c6ae3}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/model_comparison.pdf}
 \end{center}
 \subsection{Checking Accuracy}
-\label{sec:org61e930d}
+\label{sec:orgc01bc39}
 To verify the ``accuracy'' of the selected metrics, I adapted the experiment
 scripts to check for each removed model variable in the actual \texttt{aov} summary.
 Those initial choices seem to match in most cases with the variables identified
