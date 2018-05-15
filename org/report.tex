@@ -1,4 +1,4 @@
-% Created 2018-05-15 Tue 22:09
+% Created 2018-05-15 Tue 22:23
 % Intended LaTeX compiler: pdflatex
 \documentclass[final,12pt,a4paper]{article}
 
@@ -82,7 +82,7 @@ tabsize=2,
 
 
 \section{Autotuning with D-Optimal Designs and Analysis of Variance}
-\label{sec:orgb4df676}
+\label{sec:org179ae89}
 \begin{enumerate}
 \item Use \texttt{optFederov} to find 24 experiments for the full model:
 \begin{align*}
@@ -156,21 +156,21 @@ entire dataset
 \item Compare the predicted \(time\_per\_pixel\) with the global optimum
 \end{enumerate}
 \section{Results}
-\label{sec:orgbb092d2}
+\label{sec:org2c86bb3}
 \subsection{Comparing Strategies}
-\label{sec:org8b4fd96}
+\label{sec:org67a401a}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/comparison_histogram.pdf}
 \end{center}
 
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Tue May 15 22:09:37 2018
+% Tue May 15 22:22:57 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
 \begin{tabular}{lrrrrrrrrrrr}
   \hline
- & RS & LHS & GS & GSR & GA & LM & LM\_bm & RQ & DOPT & DOPTaov & DOPTaov\_t \\ 
+ & RS & LHS & GS & GSR & GA & LM & LMB & RQ & DOPT & DLM & DLMT \\ 
   \hline
 Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 & 1.01 \\ 
   1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
@@ -186,12 +186,12 @@ Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 & 1.0
 \caption{Summary statistics} 
 \end{table}
 \subsection{Comparing Models}
-\label{sec:org64c6ae3}
+\label{sec:orgd2f2394}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/model_comparison.pdf}
 \end{center}
 \subsection{Checking Accuracy}
-\label{sec:orgc01bc39}
+\label{sec:org9f5e179}
 To verify the ``accuracy'' of the selected metrics, I adapted the experiment
 scripts to check for each removed model variable in the actual \texttt{aov} summary.
 Those initial choices seem to match in most cases with the variables identified

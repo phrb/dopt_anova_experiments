@@ -172,7 +172,7 @@ library(plyr)
 
 df_all_methods <- read.csv("../data/complete_1000.csv", strip.white = T, header = T)
 
-df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM", "LM_bm","RQ", "DOPT", "DOPTaov", "DLMT"))
+df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM", "LMB","RQ", "DOPT", "DLM", "DLMT"))
 
 df_mean = ddply(df_all_methods,.(method), summarize,
                 mean = mean(slowdown))
