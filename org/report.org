@@ -172,7 +172,7 @@ library(plyr)
 
 df_all_methods <- read.csv("../data/complete_1000.csv", strip.white = T, header = T)
 
-df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM", "LM_bm","RQ", "DOPT", "DOPTaov", "DOPTaov_t"))
+df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM", "LM_bm","RQ", "DOPT", "DOPTaov", "DLMT"))
 
 df_mean = ddply(df_all_methods,.(method), summarize,
                 mean = mean(slowdown))
@@ -225,21 +225,21 @@ summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_a
                         LM = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LM", ]$slowdown)))[ , 1],
                               mean(df_all_methods[df_all_methods$method == "LM",]$point_number),
                               max(df_all_methods[df_all_methods$method == "LM",]$point_number)),
-                        LM_bm = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LM_bm", ]$slowdown)))[ , 1],
-                              mean(df_all_methods[df_all_methods$method == "LM_bm",]$point_number),
-                              max(df_all_methods[df_all_methods$method == "LM_bm",]$point_number)),
+                        LMB = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LMB", ]$slowdown)))[ , 1],
+                              mean(df_all_methods[df_all_methods$method == "LMB",]$point_number),
+                              max(df_all_methods[df_all_methods$method == "LMB",]$point_number)),
                         RQ = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RQ", ]$slowdown)))[ , 1],
                               mean(df_all_methods[df_all_methods$method == "RQ",]$point_number),
                               max(df_all_methods[df_all_methods$method == "RQ",]$point_number)),
                         DOPT = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPT", ]$slowdown)))[ , 1],
                                 mean(df_all_methods[df_all_methods$method == "DOPT",]$point_number),
                                 max(df_all_methods[df_all_methods$method == "DOPT",]$point_number)),
-                        DOPTaov = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPTaov", ]$slowdown)))[ , 1],
-                                    mean(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number),
-                                    max(df_all_methods[df_all_methods$method == "DOPTaov",]$point_number)),
-                        DOPTaov_t = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DOPTaov_t", ]$slowdown)))[ , 1],
-                                    mean(df_all_methods[df_all_methods$method == "DOPTaov_t",]$point_number),
-                                    max(df_all_methods[df_all_methods$method == "DOPTaov_t",]$point_number)))
+                        DLM = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DLM", ]$slowdown)))[ , 1],
+                                    mean(df_all_methods[df_all_methods$method == "DLM",]$point_number),
+                                    max(df_all_methods[df_all_methods$method == "DLM",]$point_number)),
+                        DLMT = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "DLMT", ]$slowdown)))[ , 1],
+                                    mean(df_all_methods[df_all_methods$method == "DLMT",]$point_number),
+                                    max(df_all_methods[df_all_methods$method == "DLMT",]$point_number)))
 
 rownames(summaries) <- c(rownames(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))), "Mean Pt.", "Max Pt.")
 x <- xtable(summaries, caption = "Summary statistics")
