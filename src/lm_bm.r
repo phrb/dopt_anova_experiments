@@ -21,7 +21,7 @@ results <- read.csv(read_file, strip.white=T, header=T)
 
 budget <- 120
 
-iterations <- 1
+iterations <- 1000
 
 factors = c("elements_number", "y_component_number",
             "vector_length", "temporary_size",

@@ -87,6 +87,11 @@
 Rscript ../src/dopt_anova.r
 #+END_SRC
 
+#+HEADER: :exports none
+#+BEGIN_SRC shell
+Rscript ../src/lm_bm.r
+#+END_SRC
+
 * Autotuning with D-Optimal Designs and Analysis of Variance
 1. Use ~optFederov~ to find 24 experiments for the full model:
     \begin{align*}
@@ -167,7 +172,7 @@ library(plyr)
 
 df_all_methods <- read.csv("../data/complete_1000.csv", strip.white = T, header = T)
 
-df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM","RQ", "DOPT", "DOPTaov"))
+df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM", "LM_bm","RQ", "DOPT", "DOPTaov"))
 
 df_mean = ddply(df_all_methods,.(method), summarize,
                 mean = mean(slowdown))
@@ -220,6 +225,9 @@ summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_a
                         LM = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LM", ]$slowdown)))[ , 1],
                               mean(df_all_methods[df_all_methods$method == "LM",]$point_number),
                               max(df_all_methods[df_all_methods$method == "LM",]$point_number)),
+                        LM_bm = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LM_bm", ]$slowdown)))[ , 1],
+                              mean(df_all_methods[df_all_methods$method == "LM_bm",]$point_number),
+                              max(df_all_methods[df_all_methods$method == "LM_bm",]$point_number)),
                         RQ = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RQ", ]$slowdown)))[ , 1],
                               mean(df_all_methods[df_all_methods$method == "RQ",]$point_number),
                               max(df_all_methods[df_all_methods$method == "RQ",]$point_number)),
@@ -240,22 +248,22 @@ print(x, size = "\\small")
 #+RESULTS:
 #+BEGIN_EXPORT latex
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Mon May 14 16:48:30 2018
+% Tue May 15 14:00:54 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
-\begin{tabular}{lrrrrrrrrr}
+\begin{tabular}{lrrrrrrrrrr}
   \hline
- & RS & LHS & GS & GSR & GA & LM & RQ & DOPT & DOPTaov \\ 
+ & RS & LHS & GS & GSR & GA & LM & LM\_bm & RQ & DOPT & DOPTaov \\ 
   \hline
-Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.38 & 1.01 \\ 
-  1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
-  Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
-  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.02 & 1.68 & 1.01 \\ 
-  3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
-  Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 2.06 & 2.91 & 1.08 \\ 
-  Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 54.85 \\ 
-  Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 119.00 & 120.00 & 56.00 \\ 
+Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 \\ 
+  1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.01 & 1.64 & 1.01 \\ 
+  Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 \\ 
+  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.03 & 1.02 & 1.68 & 1.01 \\ 
+  3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 \\ 
+  Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 3.80 & 2.06 & 2.91 & 1.08 \\ 
+  Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 104.81 & 119.00 & 120.00 & 54.85 \\ 
+  Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 106.00 & 119.00 & 120.00 & 56.00 \\ 
    \hline
 \end{tabular}
 \endgroup
@@ -576,12 +584,24 @@ grid.arrange(p_vectorlength + ggtitle("First Step: D-Opt + aov") , p_lwsy + ggti
 #+RESULTS:
 [[file:../img/model_comparison.pdf]]
 ** Checking Accuracy
-To verify the "accuracy" of the selected metrics, I adapted the experiment
+To verify the ``accuracy'' of the selected metrics, I adapted the experiment
 scripts to check for each removed model variable in the actual =aov= summary.
 Those initial choices seem to match in most cases with the variables identified
 as most relevant by the =aov= summary, as shown below.
 
-#+HEADER: :file ../img/accuracy.pdf :exports results :width 4 :height 3
+As described previously, at each step a group of variables is removed from the
+model based on their "score", that is, the "Pr(>F)" value in the =aov= summary.
+I selected at most two variables at each of the three steps, based on preliminary
+visual analysis of the =aov= summaries.
+
+To measure how accurate those initial selections were I checked at each step if
+the $n$ selected variables were in the $n$ most relevant variables in that
+step's =aov= summary. If that was the case I incremented a step-specific
+counter. The counters were updated for 1000 iterations and then divided by 1000.
+This value represents the accuracy of the static selection in comparison with
+the values that would be selected if each individual =aov= summary was analysed.
+
+#+HEADER: :file ../img/doptaov_accuracy.pdf :exports none :width 4 :height 3
 #+HEADER: :results graphics output :session *R*
 #+BEGIN_SRC R
 library(ggplot2)
@@ -604,17 +624,36 @@ theme(axis.text = element_text(size = 6),
       axis.title = element_text(size = 7, face = "bold"))
 #+END_SRC
 
+#+HEADER: :file ../img/lmbm_accuracy.pdf :exports none :width 4 :height 3
+#+HEADER: :results graphics output :session *R*
+#+BEGIN_SRC R
+library(ggplot2)
+
+accuracies_file <- "../data/testing_lm_bm_accuracies.csv"
+results <- read.csv(accuracies_file, strip.white=T, header=T)
+
+names(results) <- c("First", "Second", "Third")
+parsed_results = data.frame(names(results), t(results[1, ]))
+names(parsed_results) <- c("Steps", "Accuracy")
+
+parsed_results
+
+ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
+geom_bar(stat = "identity", width = 0.5) +
+#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
+geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
+theme_bw() +
+theme(axis.text = element_text(size = 6),
+      axis.title = element_text(size = 7, face = "bold"))
+#+END_SRC
+
 #+RESULTS:
-[[file:../img/accuracy.pdf]]
+[[file:../img/lmbm_accuracy.pdf]]
 
-As described previously, at each step a group of variables is removed from the
-model based on their "score", that is, the "Pr(>F)" value in the =aov= summary.
-I selected at most two variables at each of the three steps, based on preliminary
-visual analysis of the =aov= summaries.
+#+ATTR_LATEX: :width 0.6\columnwidth
+#+CAPTION: D-Optimal Designs with Analysis of Variance
+[[file:../img/doptaov_accuracy.pdf]]
 
-To measure how accurate those initial selections were I checked at each step if
-the $n$ selected variables were in the $n$ most relevant variables in that
-step's =aov= summary. If that was the case I incremented a step-specific
-counter. The counters were updated for 1000 iterations and then divided by 1000.
-This value represents the accuracy of the static selection in comparison with
-the values that would be selected if each individual =aov= summary was analysed.
+#+ATTR_LATEX: :width 0.6\columnwidth
+#+CAPTION: Fitting Linear Model using Bigger Model
+[[file:../img/lmbm_accuracy.pdf]]
