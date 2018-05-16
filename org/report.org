@@ -624,9 +624,13 @@ geom_bar(stat = "identity", width = 0.5) +
 #geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
 geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
 theme_bw() +
-theme(axis.text = element_text(size = 6),
-      axis.title = element_text(size = 7, face = "bold"))
+theme(axis.text = element_text(size = 9),
+      axis.title = element_text(size = 10, face = "bold")) +
+ggtitle("DLM Variable Selection Accuracy")
 #+END_SRC
+
+#+RESULTS:
+[[file:../img/doptaov_accuracy.pdf]]
 
 #+HEADER: :file ../img/lmbm_accuracy.pdf :exports none :width 4 :height 3
 #+HEADER: :results graphics output :session *R*
@@ -647,17 +651,47 @@ geom_bar(stat = "identity", width = 0.5) +
 #geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
 geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
 theme_bw() +
-theme(axis.text = element_text(size = 6),
-      axis.title = element_text(size = 7, face = "bold"))
+theme(axis.text = element_text(size = 9),
+      axis.title = element_text(size = 10, face = "bold")) +
+ggtitle("LMB Variable Selection Accuracy")
 #+END_SRC
 
 #+RESULTS:
 [[file:../img/lmbm_accuracy.pdf]]
 
-#+ATTR_LATEX: :width 0.6\columnwidth
-#+CAPTION: D-Optimal Designs with Analysis of Variance
-[[file:../img/doptaov_accuracy.pdf]]
+#+HEADER: :file ../img/dlmt_accuracy.pdf :exports none :width 4 :height 3
+#+HEADER: :results graphics output :session *R*
+#+BEGIN_SRC R
+library(ggplot2)
 
-#+ATTR_LATEX: :width 0.6\columnwidth
-#+CAPTION: Fitting Linear Model using Bigger Model
+accuracies_file <- "../data/testing_dopt_aov_t_accuracies.csv"
+results <- read.csv(accuracies_file, strip.white=T, header=T)
+
+names(results) <- c("First", "Second", "Third")
+parsed_results = data.frame(names(results), t(results[1, ]))
+names(parsed_results) <- c("Steps", "Accuracy")
+
+parsed_results
+
+ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
+geom_bar(stat = "identity", width = 0.5) +
+#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
+geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
+theme_bw() +
+theme(axis.text = element_text(size = 9),
+      axis.title = element_text(size = 10, face = "bold")) +
+ggtitle("DLMT Variable Selection Accuracy")
+#+END_SRC
+
+#+RESULTS:
+[[file:../img/dlmt_accuracy.pdf]]
+
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.45\textwidth :center
+file:../img/doptaov_accuracy.pdf
+#+ATTR_LATEX: :width 0.45\textwidth :center
 [[file:../img/lmbm_accuracy.pdf]]
+#+END_CENTER
+
+#+ATTR_LATEX: :width 0.45\textwidth
+file:../img/dlmt_accuracy.pdf

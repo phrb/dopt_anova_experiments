@@ -1,4 +1,4 @@
-% Created 2018-05-15 Tue 22:23
+% Created 2018-05-16 Wed 10:42
 % Intended LaTeX compiler: pdflatex
 \documentclass[final,12pt,a4paper]{article}
 
@@ -82,7 +82,7 @@ tabsize=2,
 
 
 \section{Autotuning with D-Optimal Designs and Analysis of Variance}
-\label{sec:org179ae89}
+\label{sec:org9539d2d}
 \begin{enumerate}
 \item Use \texttt{optFederov} to find 24 experiments for the full model:
 \begin{align*}
@@ -156,15 +156,15 @@ entire dataset
 \item Compare the predicted \(time\_per\_pixel\) with the global optimum
 \end{enumerate}
 \section{Results}
-\label{sec:org2c86bb3}
+\label{sec:org6bebcd2}
 \subsection{Comparing Strategies}
-\label{sec:org67a401a}
+\label{sec:orgc639a14}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/comparison_histogram.pdf}
 \end{center}
 
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Tue May 15 22:22:57 2018
+% Wed May 16 10:42:15 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
@@ -186,12 +186,12 @@ Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 & 1.0
 \caption{Summary statistics} 
 \end{table}
 \subsection{Comparing Models}
-\label{sec:orgd2f2394}
+\label{sec:org23bad93}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/model_comparison.pdf}
 \end{center}
 \subsection{Checking Accuracy}
-\label{sec:org9f5e179}
+\label{sec:org1ca0c82}
 To verify the ``accuracy'' of the selected metrics, I adapted the experiment
 scripts to check for each removed model variable in the actual \texttt{aov} summary.
 Those initial choices seem to match in most cases with the variables identified
@@ -209,15 +209,12 @@ counter. The counters were updated for 1000 iterations and then divided by 1000.
 This value represents the accuracy of the static selection in comparison with
 the values that would be selected if each individual \texttt{aov} summary was analysed.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.6\columnwidth]{../img/doptaov_accuracy.pdf}
-\caption{D-Optimal Designs with Analysis of Variance}
-\end{figure}
+\begin{center}
+\includegraphics[width=0.45\textwidth]{../img/doptaov_accuracy.pdf}
+\includegraphics[width=0.45\textwidth]{../img/lmbm_accuracy.pdf}
+\end{center}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.6\columnwidth]{../img/lmbm_accuracy.pdf}
-\caption{Fitting Linear Model using Bigger Model}
-\end{figure}
+\begin{center}
+\includegraphics[width=0.45\textwidth]{../img/dlmt_accuracy.pdf}
+\end{center}
 \end{document}
