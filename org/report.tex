@@ -1,4 +1,4 @@
-% Created 2018-05-16 Wed 10:42
+% Created 2018-05-16 Wed 11:12
 % Intended LaTeX compiler: pdflatex
 \documentclass[final,12pt,a4paper]{article}
 
@@ -82,7 +82,7 @@ tabsize=2,
 
 
 \section{Autotuning with D-Optimal Designs and Analysis of Variance}
-\label{sec:org9539d2d}
+\label{sec:orgcebca14}
 \begin{enumerate}
 \item Use \texttt{optFederov} to find 24 experiments for the full model:
 \begin{align*}
@@ -156,42 +156,41 @@ entire dataset
 \item Compare the predicted \(time\_per\_pixel\) with the global optimum
 \end{enumerate}
 \section{Results}
-\label{sec:org6bebcd2}
+\label{sec:orgd36cd9c}
 \subsection{Comparing Strategies}
-\label{sec:orgc639a14}
+\label{sec:orgd589665}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/comparison_histogram.pdf}
 \end{center}
 
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Wed May 16 10:42:15 2018
+% Wed May 16 11:11:57 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
-\begin{tabular}{lrrrrrrrrrrr}
+\begin{tabular}{lrrrrrrrr}
   \hline
- & RS & LHS & GS & GSR & GA & LM & LMB & RQ & DOPT & DLM & DLMT \\ 
+ & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. & Mean Pt. & Max Pt. \\ 
   \hline
-Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 & 1.01 \\ 
-  1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.02 & 1.01 & 1.01 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
-  Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.09 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
-  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.12 & 1.02 & 1.03 & 1.02 & 1.68 & 1.01 & 1.01 \\ 
-  3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.19 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
-  Max. & 1.39 & 1.52 & 124.76 & 3.16 & 1.65 & 3.77 & 3.80 & 2.06 & 2.91 & 1.08 & 1.01 \\ 
-  Mean Pt. & 120.00 & 98.92 & 22.17 & 120.00 & 120.00 & 119.00 & 104.81 & 119.00 & 120.00 & 54.85 & 54.84 \\ 
-  Max Pt. & 125.00 & 125.00 & 106.00 & 120.00 & 120.00 & 119.00 & 106.00 & 119.00 & 120.00 & 56.00 & 56.00 \\ 
+RS & 1.00 & 1.03 & 1.08 & 1.10 & 1.18 & 1.39 & 120.00 & 125.00 \\ 
+  LHS & 1.00 & 1.09 & 1.19 & 1.17 & 1.24 & 1.52 & 98.92 & 125.00 \\ 
+  GS & 1.00 & 1.35 & 1.80 & 6.46 & 6.31 & 124.76 & 22.17 & 106.00 \\ 
+  GSR & 1.00 & 1.07 & 1.19 & 1.23 & 1.33 & 3.16 & 120.00 & 120.00 \\ 
+  GA & 1.00 & 1.02 & 1.09 & 1.12 & 1.19 & 1.65 & 120.00 & 120.00 \\ 
+  LM & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 3.77 & 119.00 & 119.00 \\ 
+  LMB & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 3.80 & 104.81 & 106.00 \\ 
+  LMBT & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 1.98 & 104.89 & 106.00 \\ 
+  RQ & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 2.06 & 119.00 & 119.00 \\ 
+  DOPT & 1.38 & 1.64 & 1.64 & 1.68 & 1.64 & 2.91 & 120.00 & 120.00 \\ 
+  DLM & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.08 & 54.85 & 56.00 \\ 
+  DLMT & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 54.84 & 56.00 \\ 
    \hline
 \end{tabular}
 \endgroup
 \caption{Summary statistics} 
 \end{table}
-\subsection{Comparing Models}
-\label{sec:org23bad93}
-\begin{center}
-\includegraphics[width=.9\linewidth]{../img/model_comparison.pdf}
-\end{center}
 \subsection{Checking Accuracy}
-\label{sec:org1ca0c82}
+\label{sec:orgc15f3bb}
 To verify the ``accuracy'' of the selected metrics, I adapted the experiment
 scripts to check for each removed model variable in the actual \texttt{aov} summary.
 Those initial choices seem to match in most cases with the variables identified
@@ -211,10 +210,17 @@ the values that would be selected if each individual \texttt{aov} summary was an
 
 \begin{center}
 \includegraphics[width=0.45\textwidth]{../img/doptaov_accuracy.pdf}
-\includegraphics[width=0.45\textwidth]{../img/lmbm_accuracy.pdf}
+\includegraphics[width=0.45\textwidth]{../img/dlmt_accuracy.pdf}
 \end{center}
 
 \begin{center}
-\includegraphics[width=0.45\textwidth]{../img/dlmt_accuracy.pdf}
+\includegraphics[width=0.45\textwidth]{../img/lmbm_accuracy.pdf}
+\includegraphics[width=0.45\textwidth]{../img/lmbmt_accuracy.pdf}
+\end{center}
+
+\subsection{Comparing Models}
+\label{sec:orgb6fa1bf}
+\begin{center}
+\includegraphics[width=.9\linewidth]{../img/model_comparison.pdf}
 \end{center}
 \end{document}

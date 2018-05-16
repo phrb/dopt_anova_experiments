@@ -110,20 +110,20 @@ for (i in 1:iterations) {
         accuracies$second_step <- accuracies$second_step + 1
     }
 
-    boxcox_transform <- powerTransform(time_per_pixel ~ y_component_number +
-                                         I(1 / y_component_number) +
-                                         load_overlap + temporary_size +
-                                         elements_number + I(1 / elements_number) +
-                                         threads_number + I(1 / threads_number),
-                                       data = design)
+    # boxcox_transform <- powerTransform(time_per_pixel ~ y_component_number +
+    #                                      I(1 / y_component_number) +
+    #                                      load_overlap + temporary_size +
+    #                                      elements_number + I(1 / elements_number) +
+    #                                      threads_number + I(1 / threads_number),
+    #                                    data = design)
 
-    coef(boxcox_transform, round=TRUE)
-    regression <- lm(bcPower(time_per_pixel, boxcox_transform$roundlam) ~ y_component_number +
-                       I(1 / y_component_number) +
-                       load_overlap + temporary_size +
-                       elements_number + I(1 / elements_number) +
-                       threads_number + I(1 / threads_number),
-                     data = design)
+    # coef(boxcox_transform, round=TRUE)
+    # regression <- lm(bcPower(time_per_pixel, boxcox_transform$roundlam) ~ y_component_number +
+    #                    I(1 / y_component_number) +
+    #                    load_overlap + temporary_size +
+    #                    elements_number + I(1 / elements_number) +
+    #                    threads_number + I(1 / threads_number),
+    #                  data = design)
 
     #print(summary(regression))
 

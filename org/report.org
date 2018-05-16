@@ -172,7 +172,7 @@ library(plyr)
 
 df_all_methods <- read.csv("../data/complete_1000.csv", strip.white = T, header = T)
 
-df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM", "LMB","RQ", "DOPT", "DLM", "DLMT"))
+df_all_methods$method <- factor(df_all_methods$method, levels = c("RS","LHS","GS","GSR","GA","LM", "LMB", "LMBT", "RQ", "DOPT", "DLM", "DLMT"))
 
 df_mean = ddply(df_all_methods,.(method), summarize,
                 mean = mean(slowdown))
@@ -228,6 +228,9 @@ summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_a
                         LMB = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LMB", ]$slowdown)))[ , 1],
                               mean(df_all_methods[df_all_methods$method == "LMB",]$point_number),
                               max(df_all_methods[df_all_methods$method == "LMB",]$point_number)),
+                        LMBT = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "LMBT", ]$slowdown)))[ , 1],
+                              mean(df_all_methods[df_all_methods$method == "LMBT",]$point_number),
+                              max(df_all_methods[df_all_methods$method == "LMBT",]$point_number)),
                         RQ = c(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RQ", ]$slowdown)))[ , 1],
                               mean(df_all_methods[df_all_methods$method == "RQ",]$point_number),
                               max(df_all_methods[df_all_methods$method == "RQ",]$point_number)),
@@ -242,7 +245,7 @@ summaries <- data.frame(RS = c(as.data.frame(unclass(summary(df_all_methods[df_a
                                     max(df_all_methods[df_all_methods$method == "DLMT",]$point_number)))
 
 rownames(summaries) <- c(rownames(as.data.frame(unclass(summary(df_all_methods[df_all_methods$method == "RS", ]$slowdown)))), "Mean Pt.", "Max Pt.")
-x <- xtable(summaries, caption = "Summary statistics")
+x <- xtable(t(summaries), caption = "Summary statistics")
 align(x) <- xalign(x)
 display(x) <- display(x)
 print(x, size = "\\small")
@@ -251,29 +254,172 @@ print(x, size = "\\small")
 #+RESULTS:
 #+BEGIN_EXPORT latex
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Tue May 15 22:06:10 2018
+% Wed May 16 11:06:03 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
-\begin{tabular}{lrrrrrrrrrr}
+\begin{tabular}{lrrrrrrrr}
   \hline
- & RS & LHS & GS & GSR & LM & LM\_bm & RQ & DOPT & DOPTaov & DOPTaov\_t \\ 
+ & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. & Mean Pt. & Max Pt. \\ 
   \hline
-Min. & 1.00 & 1.00 & 1.00 & 1.00 & 1.01 & 1.01 & 1.01 & 1.38 & 1.01 & 1.01 \\ 
-  1st Qu. & 1.03 & 1.09 & 1.35 & 1.07 & 1.01 & 1.01 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
-  Median & 1.08 & 1.19 & 1.80 & 1.19 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
-  Mean & 1.10 & 1.17 & 6.46 & 1.23 & 1.02 & 1.03 & 1.02 & 1.68 & 1.01 & 1.01 \\ 
-  3rd Qu. & 1.18 & 1.24 & 6.31 & 1.33 & 1.01 & 1.03 & 1.01 & 1.64 & 1.01 & 1.01 \\ 
-  Max. & 1.39 & 1.52 & 124.76 & 3.16 & 3.77 & 3.80 & 2.06 & 2.91 & 1.08 & 1.01 \\ 
-  NA's & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 & 1000.00 \\ 
-  Mean Pt. &  &  &  &  &  &  &  &  &  &  \\ 
-  Max Pt. &  &  &  &  &  &  &  &  &  &  \\ 
+RS & 1.00 & 1.03 & 1.08 & 1.10 & 1.18 & 1.39 & 120.00 & 125.00 \\ 
+  LHS & 1.00 & 1.09 & 1.19 & 1.17 & 1.24 & 1.52 & 98.92 & 125.00 \\ 
+  GS & 1.00 & 1.35 & 1.80 & 6.46 & 6.31 & 124.76 & 22.17 & 106.00 \\ 
+  GSR & 1.00 & 1.07 & 1.19 & 1.23 & 1.33 & 3.16 & 120.00 & 120.00 \\ 
+  GA & 1.00 & 1.02 & 1.09 & 1.12 & 1.19 & 1.65 & 120.00 & 120.00 \\ 
+  LM & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 3.77 & 119.00 & 119.00 \\ 
+  LMB & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 3.80 & 104.81 & 106.00 \\ 
+  LMBT & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 1.98 & 104.89 & 106.00 \\ 
+  RQ & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 2.06 & 119.00 & 119.00 \\ 
+  DOPT & 1.38 & 1.64 & 1.64 & 1.68 & 1.64 & 2.91 & 120.00 & 120.00 \\ 
+  DLM & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.08 & 54.85 & 56.00 \\ 
+  DLMT & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 54.84 & 56.00 \\ 
    \hline
 \end{tabular}
 \endgroup
 \caption{Summary statistics} 
 \end{table}
 #+END_EXPORT
+** Checking Accuracy
+To verify the ``accuracy'' of the selected metrics, I adapted the experiment
+scripts to check for each removed model variable in the actual =aov= summary.
+Those initial choices seem to match in most cases with the variables identified
+as most relevant by the =aov= summary, as shown below.
+
+As described previously, at each step a group of variables is removed from the
+model based on their "score", that is, the "Pr(>F)" value in the =aov= summary.
+I selected at most two variables at each of the three steps, based on preliminary
+visual analysis of the =aov= summaries.
+
+To measure how accurate those initial selections were I checked at each step if
+the $n$ selected variables were in the $n$ most relevant variables in that
+step's =aov= summary. If that was the case I incremented a step-specific
+counter. The counters were updated for 1000 iterations and then divided by 1000.
+This value represents the accuracy of the static selection in comparison with
+the values that would be selected if each individual =aov= summary was analysed.
+
+#+HEADER: :file ../img/doptaov_accuracy.pdf :exports none :width 4 :height 3
+#+HEADER: :results graphics output :session *R*
+#+BEGIN_SRC R
+library(ggplot2)
+
+accuracies_file <- "../data/dopt_accuracies.csv"
+results <- read.csv(accuracies_file, strip.white=T, header=T)
+
+names(results) <- c("First", "Second", "Third")
+parsed_results = data.frame(names(results), t(results[1, ]))
+names(parsed_results) <- c("Steps", "Accuracy")
+
+parsed_results
+
+ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
+geom_bar(stat = "identity", width = 0.5) +
+#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
+geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
+theme_bw() +
+theme(axis.text = element_text(size = 9),
+      axis.title = element_text(size = 10, face = "bold")) +
+ggtitle("DLM Variable Selection Accuracy")
+#+END_SRC
+
+#+RESULTS:
+[[file:../img/doptaov_accuracy.pdf]]
+
+#+HEADER: :file ../img/lmbm_accuracy.pdf :exports none :width 4 :height 3
+#+HEADER: :results graphics output :session *R*
+#+BEGIN_SRC R
+library(ggplot2)
+
+accuracies_file <- "../data/testing_lm_bm_accuracies.csv"
+results <- read.csv(accuracies_file, strip.white=T, header=T)
+
+names(results) <- c("First", "Second", "Third")
+parsed_results = data.frame(names(results), t(results[1, ]))
+names(parsed_results) <- c("Steps", "Accuracy")
+
+parsed_results
+
+ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
+geom_bar(stat = "identity", width = 0.5) +
+#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
+geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
+theme_bw() +
+theme(axis.text = element_text(size = 9),
+      axis.title = element_text(size = 10, face = "bold")) +
+ggtitle("LMB Variable Selection Accuracy")
+#+END_SRC
+
+#+RESULTS:
+[[file:../img/lmbm_accuracy.pdf]]
+
+#+HEADER: :file ../img/lmbmt_accuracy.pdf :exports none :width 4 :height 3
+#+HEADER: :results graphics output :session *R*
+#+BEGIN_SRC R
+library(ggplot2)
+
+accuracies_file <- "../data/testing_lm_bm_t_accuracies.csv"
+results <- read.csv(accuracies_file, strip.white=T, header=T)
+
+names(results) <- c("First", "Second", "Third")
+parsed_results = data.frame(names(results), t(results[1, ]))
+names(parsed_results) <- c("Steps", "Accuracy")
+
+parsed_results
+
+ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
+geom_bar(stat = "identity", width = 0.5) +
+#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
+geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
+theme_bw() +
+theme(axis.text = element_text(size = 9),
+      axis.title = element_text(size = 10, face = "bold")) +
+ggtitle("LMBT Variable Selection Accuracy")
+#+END_SRC
+
+#+RESULTS:
+[[file:../img/lmbmt_accuracy.pdf]]
+
+#+HEADER: :file ../img/dlmt_accuracy.pdf :exports none :width 4 :height 3
+#+HEADER: :results graphics output :session *R*
+#+BEGIN_SRC R
+library(ggplot2)
+
+accuracies_file <- "../data/testing_dopt_aov_t_accuracies.csv"
+results <- read.csv(accuracies_file, strip.white=T, header=T)
+
+names(results) <- c("First", "Second", "Third")
+parsed_results = data.frame(names(results), t(results[1, ]))
+names(parsed_results) <- c("Steps", "Accuracy")
+
+parsed_results
+
+ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
+geom_bar(stat = "identity", width = 0.5) +
+#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
+geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
+theme_bw() +
+theme(axis.text = element_text(size = 9),
+      axis.title = element_text(size = 10, face = "bold")) +
+ggtitle("DLMT Variable Selection Accuracy")
+#+END_SRC
+
+#+RESULTS:
+[[file:../img/dlmt_accuracy.pdf]]
+
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.45\textwidth :center
+file:../img/doptaov_accuracy.pdf
+#+ATTR_LATEX: :width 0.45\textwidth :center
+file:../img/dlmt_accuracy.pdf
+#+END_CENTER
+
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.45\textwidth :center
+[[file:../img/lmbm_accuracy.pdf]]
+#+ATTR_LATEX: :width 0.45\textwidth :center
+[[file:../img/lmbmt_accuracy.pdf]]
+#+END_CENTER
+
 ** Comparing Models
 #+HEADER: :file ../img/model_comparison.pdf :exports results :width 9 :height 13
 #+HEADER: :results graphics output :session *R*
@@ -587,111 +733,3 @@ grid.arrange(p_vectorlength + ggtitle("First Step: D-Opt + aov") , p_lwsy + ggti
 
 #+RESULTS:
 [[file:../img/model_comparison.pdf]]
-** Checking Accuracy
-To verify the ``accuracy'' of the selected metrics, I adapted the experiment
-scripts to check for each removed model variable in the actual =aov= summary.
-Those initial choices seem to match in most cases with the variables identified
-as most relevant by the =aov= summary, as shown below.
-
-As described previously, at each step a group of variables is removed from the
-model based on their "score", that is, the "Pr(>F)" value in the =aov= summary.
-I selected at most two variables at each of the three steps, based on preliminary
-visual analysis of the =aov= summaries.
-
-To measure how accurate those initial selections were I checked at each step if
-the $n$ selected variables were in the $n$ most relevant variables in that
-step's =aov= summary. If that was the case I incremented a step-specific
-counter. The counters were updated for 1000 iterations and then divided by 1000.
-This value represents the accuracy of the static selection in comparison with
-the values that would be selected if each individual =aov= summary was analysed.
-
-#+HEADER: :file ../img/doptaov_accuracy.pdf :exports none :width 4 :height 3
-#+HEADER: :results graphics output :session *R*
-#+BEGIN_SRC R
-library(ggplot2)
-
-accuracies_file <- "../data/dopt_accuracies.csv"
-results <- read.csv(accuracies_file, strip.white=T, header=T)
-
-names(results) <- c("First", "Second", "Third")
-parsed_results = data.frame(names(results), t(results[1, ]))
-names(parsed_results) <- c("Steps", "Accuracy")
-
-parsed_results
-
-ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
-geom_bar(stat = "identity", width = 0.5) +
-#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
-geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
-theme_bw() +
-theme(axis.text = element_text(size = 9),
-      axis.title = element_text(size = 10, face = "bold")) +
-ggtitle("DLM Variable Selection Accuracy")
-#+END_SRC
-
-#+RESULTS:
-[[file:../img/doptaov_accuracy.pdf]]
-
-#+HEADER: :file ../img/lmbm_accuracy.pdf :exports none :width 4 :height 3
-#+HEADER: :results graphics output :session *R*
-#+BEGIN_SRC R
-library(ggplot2)
-
-accuracies_file <- "../data/testing_lm_bm_accuracies.csv"
-results <- read.csv(accuracies_file, strip.white=T, header=T)
-
-names(results) <- c("First", "Second", "Third")
-parsed_results = data.frame(names(results), t(results[1, ]))
-names(parsed_results) <- c("Steps", "Accuracy")
-
-parsed_results
-
-ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
-geom_bar(stat = "identity", width = 0.5) +
-#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
-geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
-theme_bw() +
-theme(axis.text = element_text(size = 9),
-      axis.title = element_text(size = 10, face = "bold")) +
-ggtitle("LMB Variable Selection Accuracy")
-#+END_SRC
-
-#+RESULTS:
-[[file:../img/lmbm_accuracy.pdf]]
-
-#+HEADER: :file ../img/dlmt_accuracy.pdf :exports none :width 4 :height 3
-#+HEADER: :results graphics output :session *R*
-#+BEGIN_SRC R
-library(ggplot2)
-
-accuracies_file <- "../data/testing_dopt_aov_t_accuracies.csv"
-results <- read.csv(accuracies_file, strip.white=T, header=T)
-
-names(results) <- c("First", "Second", "Third")
-parsed_results = data.frame(names(results), t(results[1, ]))
-names(parsed_results) <- c("Steps", "Accuracy")
-
-parsed_results
-
-ggplot(data = parsed_results, aes(x = Steps, y = Accuracy)) +
-geom_bar(stat = "identity", width = 0.5) +
-#geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
-geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
-theme_bw() +
-theme(axis.text = element_text(size = 9),
-      axis.title = element_text(size = 10, face = "bold")) +
-ggtitle("DLMT Variable Selection Accuracy")
-#+END_SRC
-
-#+RESULTS:
-[[file:../img/dlmt_accuracy.pdf]]
-
-#+BEGIN_CENTER
-#+ATTR_LATEX: :width 0.45\textwidth :center
-file:../img/doptaov_accuracy.pdf
-#+ATTR_LATEX: :width 0.45\textwidth :center
-[[file:../img/lmbm_accuracy.pdf]]
-#+END_CENTER
-
-#+ATTR_LATEX: :width 0.45\textwidth
-file:../img/dlmt_accuracy.pdf
