@@ -114,15 +114,15 @@ Rscript ../src/lm_bm.r
 5. Use the fitted model to predict the best $time\_per\_pixel$ value in the
    entire dataset
 6. Prune the dataset using the predicted best values for $vector\_length$ and $lws\_y$
-7. Use ~optFederov~ to find 24 experiments for the pruned model. If there are less
-   than or exactly 24 candidates, use the full candidate set.
+7. Use ~optFederov~ to find 18 experiments for the pruned model. If there are less
+   than or exactly 18 candidates, use the full candidate set.
     \begin{align*}
         Y = & \; y\_component\_number + 1 / y\_component\_number + \\
             & \; load\_overlap + temporary\_size + \\
             & \; elements\_number + 1 / elements\_number + \\
             & \; threads\_number + 1 / threads\_number
     \end{align*}
-8. Use ~aov~ to fit the pruned model, spending the 24 evaluations:
+8. Use ~aov~ to fit the pruned model, spending the 18 evaluations:
     \begin{align*}
           time\_per\_pixel = & \; y\_component\_number + 1 / y\_component\_number + \\
                             & \; load\_overlap + temporary\_size + \\
@@ -135,13 +135,13 @@ Rscript ../src/lm_bm.r
     entire dataset
 11. Prune the dataset using the predicted best values for $y\_component\_number$ and
     $threads\_number$
-12. Use ~optFederov~ to find 24 experiments for the pruned model. If there are less
-    than or exactly 24 candidates, use the full candidate set.
+12. Use ~optFederov~ to find 10 experiments for the pruned model. If there are less
+    than or exactly 10 candidates, use the full candidate set.
     \begin{align*}
         Y = & \; load\_overlap + temporary\_size + \\
             & \; elements\_number + 1 / elements\_number
     \end{align*}
-13. Use ~aov~ to fit the pruned model, spending the 24 evaluations:
+13. Use ~aov~ to fit the pruned model, spending the 10 evaluations:
     \begin{align*}
           time\_per\_pixel = & \; load\_overlap + temporary\_size + \\
                             & \; elements\_number + 1 / elements\_number
@@ -151,12 +151,12 @@ Rscript ../src/lm_bm.r
 15. Use the fitted model to predict the best $time\_per\_pixel$ value in the
     entire dataset
 16. Prune the dataset using the predicted best values for $elements\_number$
-12. Use ~optFederov~ to find 24 experiments for the pruned model. If there are less
-    than or exactly 24 candidates, use the full candidate set.
+12. Use ~optFederov~ to find 6 experiments for the pruned model. If there are less
+    than or exactly 6 candidates, use the full candidate set.
     \begin{align*}
         Y = load\_overlap + temporary\_size
     \end{align*}
-13. Use ~aov~ to fit the pruned model, spending the 24 evaluations:
+13. Use ~aov~ to fit the pruned model, spending the 6 evaluations:
     \begin{align*}
           time\_per\_pixel = load\_overlap + temporary\_size
     \end{align*}
@@ -280,6 +280,14 @@ RS & 1.00 & 1.03 & 1.08 & 1.10 & 1.18 & 1.39 & 120.00 & 125.00 \\
 \caption{Summary statistics} 
 \end{table}
 #+END_EXPORT
+
+Added strategies:
+- *LMB*: Same as LM, with more model variables
+- *LMBT* Same as LMB, with /power transforms/
+- *DOPT*: One D-Optimal design with 120 points, using the full model
+- *DLM*: Similar to LM, using D-Optimal designs instead of uniform sampling
+- *DLMT*: Same as DLM, with /power transforms/
+
 ** Checking Accuracy
 To verify the ``accuracy'' of the selected metrics, I adapted the experiment
 scripts to check for each removed model variable in the actual =aov= summary.
@@ -317,8 +325,8 @@ geom_bar(stat = "identity", width = 0.5) +
 #geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
 geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
 theme_bw() +
-theme(axis.text = element_text(size = 9),
-      axis.title = element_text(size = 10, face = "bold")) +
+theme(axis.text = element_text(size = 11),
+      axis.title = element_text(size = 12, face = "bold")) +
 ggtitle("DLM Variable Selection Accuracy")
 #+END_SRC
 
@@ -344,8 +352,8 @@ geom_bar(stat = "identity", width = 0.5) +
 #geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
 geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
 theme_bw() +
-theme(axis.text = element_text(size = 9),
-      axis.title = element_text(size = 10, face = "bold")) +
+theme(axis.text = element_text(size = 11),
+      axis.title = element_text(size = 12, face = "bold")) +
 ggtitle("LMB Variable Selection Accuracy")
 #+END_SRC
 
@@ -371,8 +379,8 @@ geom_bar(stat = "identity", width = 0.5) +
 #geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
 geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
 theme_bw() +
-theme(axis.text = element_text(size = 9),
-      axis.title = element_text(size = 10, face = "bold")) +
+theme(axis.text = element_text(size = 11),
+      axis.title = element_text(size = 12, face = "bold")) +
 ggtitle("LMBT Variable Selection Accuracy")
 #+END_SRC
 
@@ -398,8 +406,8 @@ geom_bar(stat = "identity", width = 0.5) +
 #geom_hline(yintercept = 1.0, color = "red", linetype = 2) +
 geom_text(aes(label = Accuracy), vjust = 1.6, color = "white", size = 3)+
 theme_bw() +
-theme(axis.text = element_text(size = 9),
-      axis.title = element_text(size = 10, face = "bold")) +
+theme(axis.text = element_text(size = 11),
+      axis.title = element_text(size = 12, face = "bold")) +
 ggtitle("DLMT Variable Selection Accuracy")
 #+END_SRC
 
@@ -407,16 +415,16 @@ ggtitle("DLMT Variable Selection Accuracy")
 [[file:../img/dlmt_accuracy.pdf]]
 
 #+BEGIN_CENTER
-#+ATTR_LATEX: :width 0.45\textwidth :center
+#+ATTR_LATEX: :width 0.4\textwidth :center
 file:../img/doptaov_accuracy.pdf
-#+ATTR_LATEX: :width 0.45\textwidth :center
+#+ATTR_LATEX: :width 0.4\textwidth :center
 file:../img/dlmt_accuracy.pdf
 #+END_CENTER
 
 #+BEGIN_CENTER
-#+ATTR_LATEX: :width 0.45\textwidth :center
+#+ATTR_LATEX: :width 0.4\textwidth :center
 [[file:../img/lmbm_accuracy.pdf]]
-#+ATTR_LATEX: :width 0.45\textwidth :center
+#+ATTR_LATEX: :width 0.4\textwidth :center
 [[file:../img/lmbmt_accuracy.pdf]]
 #+END_CENTER
 

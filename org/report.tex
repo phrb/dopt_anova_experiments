@@ -1,4 +1,4 @@
-% Created 2018-05-16 Wed 11:12
+% Created 2018-05-16 Wed 13:39
 % Intended LaTeX compiler: pdflatex
 \documentclass[final,12pt,a4paper]{article}
 
@@ -82,7 +82,7 @@ tabsize=2,
 
 
 \section{Autotuning with D-Optimal Designs and Analysis of Variance}
-\label{sec:orgcebca14}
+\label{sec:org09a2432}
 \begin{enumerate}
 \item Use \texttt{optFederov} to find 24 experiments for the full model:
 \begin{align*}
@@ -105,15 +105,15 @@ case, they are \(vector\_length\) and \(lws\_y\).
 \item Use the fitted model to predict the best \(time\_per\_pixel\) value in the
 entire dataset
 \item Prune the dataset using the predicted best values for \(vector\_length\) and \(lws\_y\)
-\item Use \texttt{optFederov} to find 24 experiments for the pruned model. If there are less
-than or exactly 24 candidates, use the full candidate set.
+\item Use \texttt{optFederov} to find 18 experiments for the pruned model. If there are less
+than or exactly 18 candidates, use the full candidate set.
 \begin{align*}
     Y = & \; y\_component\_number + 1 / y\_component\_number + \\
         & \; load\_overlap + temporary\_size + \\
         & \; elements\_number + 1 / elements\_number + \\
         & \; threads\_number + 1 / threads\_number
 \end{align*}
-\item Use \texttt{aov} to fit the pruned model, spending the 24 evaluations:
+\item Use \texttt{aov} to fit the pruned model, spending the 18 evaluations:
 \begin{align*}
       time\_per\_pixel = & \; y\_component\_number + 1 / y\_component\_number + \\
                         & \; load\_overlap + temporary\_size + \\
@@ -126,13 +126,13 @@ case, they are \(y\_component\_number\) and \(threads\_number\).
 entire dataset
 \item Prune the dataset using the predicted best values for \(y\_component\_number\) and
 \(threads\_number\)
-\item Use \texttt{optFederov} to find 24 experiments for the pruned model. If there are less
-than or exactly 24 candidates, use the full candidate set.
+\item Use \texttt{optFederov} to find 10 experiments for the pruned model. If there are less
+than or exactly 10 candidates, use the full candidate set.
 \begin{align*}
     Y = & \; load\_overlap + temporary\_size + \\
         & \; elements\_number + 1 / elements\_number
 \end{align*}
-\item Use \texttt{aov} to fit the pruned model, spending the 24 evaluations:
+\item Use \texttt{aov} to fit the pruned model, spending the 10 evaluations:
 \begin{align*}
       time\_per\_pixel = & \; load\_overlap + temporary\_size + \\
                         & \; elements\_number + 1 / elements\_number
@@ -142,12 +142,12 @@ case, it is \(elements\_number\)
 \item Use the fitted model to predict the best \(time\_per\_pixel\) value in the
 entire dataset
 \item Prune the dataset using the predicted best values for \(elements\_number\)
-\item Use \texttt{optFederov} to find 24 experiments for the pruned model. If there are less
-than or exactly 24 candidates, use the full candidate set.
+\item Use \texttt{optFederov} to find 6 experiments for the pruned model. If there are less
+than or exactly 6 candidates, use the full candidate set.
 \begin{align*}
     Y = load\_overlap + temporary\_size
 \end{align*}
-\item Use \texttt{aov} to fit the pruned model, spending the 24 evaluations:
+\item Use \texttt{aov} to fit the pruned model, spending the 6 evaluations:
 \begin{align*}
       time\_per\_pixel = load\_overlap + temporary\_size
 \end{align*}
@@ -156,15 +156,15 @@ entire dataset
 \item Compare the predicted \(time\_per\_pixel\) with the global optimum
 \end{enumerate}
 \section{Results}
-\label{sec:orgd36cd9c}
+\label{sec:org66f5313}
 \subsection{Comparing Strategies}
-\label{sec:orgd589665}
+\label{sec:orga090ae7}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/comparison_histogram.pdf}
 \end{center}
 
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Wed May 16 11:11:57 2018
+% Wed May 16 13:39:15 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
@@ -189,8 +189,18 @@ RS & 1.00 & 1.03 & 1.08 & 1.10 & 1.18 & 1.39 & 120.00 & 125.00 \\
 \endgroup
 \caption{Summary statistics} 
 \end{table}
+
+Added strategies:
+\begin{itemize}
+\item \textbf{LMB}: Same as LM, with more model variables
+\item \textbf{LMBT} Same as LMB, with \emph{power transforms}
+\item \textbf{DOPT}: One D-Optimal design with 120 points, using the full model
+\item \textbf{DLM}: Similar to LM, using D-Optimal designs instead of uniform sampling
+\item \textbf{DLMT}: Same as DLM, with \emph{power transforms}
+\end{itemize}
+
 \subsection{Checking Accuracy}
-\label{sec:orgc15f3bb}
+\label{sec:orgc201e9f}
 To verify the ``accuracy'' of the selected metrics, I adapted the experiment
 scripts to check for each removed model variable in the actual \texttt{aov} summary.
 Those initial choices seem to match in most cases with the variables identified
@@ -209,17 +219,17 @@ This value represents the accuracy of the static selection in comparison with
 the values that would be selected if each individual \texttt{aov} summary was analysed.
 
 \begin{center}
-\includegraphics[width=0.45\textwidth]{../img/doptaov_accuracy.pdf}
-\includegraphics[width=0.45\textwidth]{../img/dlmt_accuracy.pdf}
+\includegraphics[width=0.4\textwidth]{../img/doptaov_accuracy.pdf}
+\includegraphics[width=0.4\textwidth]{../img/dlmt_accuracy.pdf}
 \end{center}
 
 \begin{center}
-\includegraphics[width=0.45\textwidth]{../img/lmbm_accuracy.pdf}
-\includegraphics[width=0.45\textwidth]{../img/lmbmt_accuracy.pdf}
+\includegraphics[width=0.4\textwidth]{../img/lmbm_accuracy.pdf}
+\includegraphics[width=0.4\textwidth]{../img/lmbmt_accuracy.pdf}
 \end{center}
 
 \subsection{Comparing Models}
-\label{sec:orgb6fa1bf}
+\label{sec:orgfaf6ba9}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/model_comparison.pdf}
 \end{center}
