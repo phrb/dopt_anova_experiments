@@ -2,8 +2,6 @@ library(AlgDesign)
 library(car)
 library(dplyr)
 
-set.seed(19191)
-
 check_prediction <- function(regression, prediction, target_size) {
   predicted_effects <- summary(regression)[[1]][["Pr(>F)"]]
   names(predicted_effects) <- trimws(rownames(summary(regression)[[1]]))

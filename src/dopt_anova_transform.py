@@ -56,23 +56,22 @@ def anova(design, formula):
 def predict_best(regression, data):
     print("Predicting Best")
     predicted = stats.predict(regression, data)
-    predicted_best = predicted.index(min(predicted))
 
-    p_min = min(predicted)
-    i = 0
+    predicted_min = min(predicted)
+    identical_predictions = 0
+
     for k in range(len(predicted)):
-        if isclose(predicted[k], p_min, rel_tol = 1e-5):
-            i += 1
+        if isclose(predicted[k], predicted_min, rel_tol = 1e-5):
+            identical_predictions += 1
 
-    print("Identical predictions (tol = 1e-5): {0}".format(i))
-    return data.rx(predicted_best, True)
+    print("Identical predictions (tol = 1e-5): {0}".format(identical_predictions))
+    return data.rx(predicted.ro == base.min(predicted), True)
 
 def prune_data(data, predicted_best, fixed_variables):
     print("Pruning Data")
     conditions = []
 
     for k, v in fixed_variables.items():
-        print(predicted_best.rx2(str(k)))
         if conditions == []:
             conditions = data.rx2(str(k)).ro == predicted_best.rx2(str(k))
         else:
@@ -128,8 +127,6 @@ def dopt_anova_step(response, factors, inverse_factors, data, step_data, fixed_f
     if len(inverse_factors) > 0:
         full_model += " + " + " + ".join(["I(1 / {0})".format(f) for f in
             inverse_factors])
-
-    print(full_model)
 
     design_formula = full_model
     lm_formula     = response[0] + full_model
@@ -199,7 +196,7 @@ def dopt_anova():
 
     fixed_factors = {}
 
-    initial_budget = 120
+    initial_budget = 54
     budget = initial_budget
     used_experiments = 0
     iterations = 4
