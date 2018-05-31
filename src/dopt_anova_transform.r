@@ -2,6 +2,8 @@ library(AlgDesign)
 library(car)
 library(dplyr)
 
+set.seed(19191)
+
 check_prediction <- function(regression, prediction, target_size) {
   predicted_effects <- summary(regression)[[1]][["Pr(>F)"]]
   names(predicted_effects) <- trimws(rownames(summary(regression)[[1]]))
@@ -14,7 +16,8 @@ check_prediction <- function(regression, prediction, target_size) {
 complete_data = read.csv("../data/search_space.csv", header = TRUE)
 # str(complete_data)
 
-accuracies_file <- "../data/testing_dopt_aov_t_accuracies.csv"
+#accuracies_file <- "../data/testing_dopt_aov_t_accuracies.csv"
+accuracies_file <- "../data/accuracies_test.csv"
 read_file <- "../data/old_complete_1000.csv"
 write_file <- "../data/testing_1000.csv"
 
@@ -22,7 +25,7 @@ results <- read.csv(read_file, strip.white=T, header=T)
 
 budget <- 120
 
-iterations <- 1000
+iterations <- 1
 
 factors = c("elements_number", "y_component_number",
             "vector_length", "temporary_size",
@@ -86,8 +89,17 @@ for (i in 1:iterations) {
                                           threads_number + I(1 / threads_number),
                                        data = federov_design)
 
-    coef(boxcox_transform, round=TRUE)
-    regression <- lm(bcPower(time_per_pixel, boxcox_transform$roundlam) ~ y_component_number +
+    print(boxcox_transform)
+    print(coef(boxcox_transform, round=TRUE))
+    #transformed_response <- bcPower(federov_design$time_per_pixel, boxcox_transform$lambda)
+    #test_data <- cbind(federov_design, transformed_response)
+    #regression <- lm(transformed_response ~ y_component_number +
+    #                                I(1 / y_component_number) +
+    #                                load_overlap + temporary_size +
+    #                                elements_number + I(1 / elements_number) +
+    #                                threads_number + I(1 / threads_number),
+    #                             data = test_data)
+    regression <- lm(bcPower(time_per_pixel, boxcox_transform$lambda) ~ y_component_number +
                                     I(1 / y_component_number) +
                                     vector_length + lws_y + I(1 / lws_y) +
                                     load_overlap + temporary_size +
@@ -103,6 +115,15 @@ for (i in 1:iterations) {
     # then fit a new model without them
 
     predicted_best <- data[predict(regression, data) == min(predict(regression, data)), ]
+    best <- complete_data[complete_data$time_per_pixel == min(complete_data$time_per_pixel), ]
+    best_row <- rownames(best)
+
+    predicted_best$slowdown <- predicted_best$time_per_pixel / best$time_per_pixel
+    predicted_best$method <- rep("DOPTaov_t", nrow(predicted_best))
+    predicted_best$point_number <- rep(used, nrow(predicted_best))
+    predicted_best$vector_recompute <- rep("true", nrow(predicted_best))
+
+    print(predicted_best)
     # predicted_best
 
     data <- complete_data[complete_data$vector_length == predicted_best$vector_length &
@@ -149,7 +170,7 @@ for (i in 1:iterations) {
                                           threads_number + I(1 / threads_number),
                                        data = federov_design)
 
-    coef(boxcox_transform, round=TRUE)
+    print(coef(boxcox_transform, round=TRUE))
     regression <- lm(bcPower(time_per_pixel, boxcox_transform$roundlam) ~ y_component_number +
                                     I(1 / y_component_number) +
                                     load_overlap + temporary_size +
@@ -165,6 +186,15 @@ for (i in 1:iterations) {
     # then fit a new model without them
 
     predicted_best <- data[predict(regression, data) == min(predict(regression, data)), ]
+    best <- complete_data[complete_data$time_per_pixel == min(complete_data$time_per_pixel), ]
+    best_row <- rownames(best)
+
+    predicted_best$slowdown <- predicted_best$time_per_pixel / best$time_per_pixel
+    predicted_best$method <- rep("DOPTaov_t", nrow(predicted_best))
+    predicted_best$point_number <- rep(used, nrow(predicted_best))
+    predicted_best$vector_recompute <- rep("true", nrow(predicted_best))
+
+    print(predicted_best)
     # predicted_best
 
     data <- complete_data[complete_data$vector_length == predicted_best$vector_length &
@@ -219,6 +249,15 @@ for (i in 1:iterations) {
     # then fit a new model without it
 
     predicted_best <- data[predict(regression, data) == min(predict(regression, data)), ]
+    best <- complete_data[complete_data$time_per_pixel == min(complete_data$time_per_pixel), ]
+    best_row <- rownames(best)
+
+    predicted_best$slowdown <- predicted_best$time_per_pixel / best$time_per_pixel
+    predicted_best$method <- rep("DOPTaov_t", nrow(predicted_best))
+    predicted_best$point_number <- rep(used, nrow(predicted_best))
+    predicted_best$vector_recompute <- rep("true", nrow(predicted_best))
+
+    print(predicted_best)
     # predicted_best
 
     data <- complete_data[complete_data$vector_length == predicted_best$vector_length &
@@ -278,6 +317,7 @@ for (i in 1:iterations) {
                                         "slowdown")]
     # predicted_best
     results <- rbind(results, predicted_best)
+    print(predicted_best)
 }
 
 accuracies <- accuracies / iterations
