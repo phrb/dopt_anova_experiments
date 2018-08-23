@@ -93,6 +93,10 @@ Rscript ../src/lm_bm.r
 #+END_SRC
 
 * Autotuning with D-Optimal Designs and Analysis of Variance
+** Strategy Overview
+#+ATTR_LATEX: :width 0.7\textwidth
+[[file:~/code/dopt_anova_experiments/img/doe_anova_strategy.eps]]
+** Complete Step Descriptions
 1. Use ~optFederov~ to find 24 experiments for the full model:
     \begin{align*}
         Y = & \; y\_component\_number + 1 / y\_component\_number + \\
@@ -260,24 +264,24 @@ print(x, size = "\\small")
 \begingroup\small
 \begin{tabular}{lrrrrrrrr}
   \hline
- & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. & Mean Pt. & Max Pt. \\ 
+ & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. & Mean Pt. & Max Pt. \\
   \hline
-RS & 1.00 & 1.03 & 1.08 & 1.10 & 1.18 & 1.39 & 120.00 & 125.00 \\ 
-  LHS & 1.00 & 1.09 & 1.19 & 1.17 & 1.24 & 1.52 & 98.92 & 125.00 \\ 
-  GS & 1.00 & 1.35 & 1.80 & 6.46 & 6.31 & 124.76 & 22.17 & 106.00 \\ 
-  GSR & 1.00 & 1.07 & 1.19 & 1.23 & 1.33 & 3.16 & 120.00 & 120.00 \\ 
-  GA & 1.00 & 1.02 & 1.09 & 1.12 & 1.19 & 1.65 & 120.00 & 120.00 \\ 
-  LM & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 3.77 & 119.00 & 119.00 \\ 
-  LMB & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 3.80 & 104.81 & 106.00 \\ 
-  LMBT & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 1.98 & 104.89 & 106.00 \\ 
-  RQ & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 2.06 & 119.00 & 119.00 \\ 
-  DOPT & 1.38 & 1.64 & 1.64 & 1.68 & 1.64 & 2.91 & 120.00 & 120.00 \\ 
-  DLM & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.08 & 54.85 & 56.00 \\ 
-  DLMT & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 54.84 & 56.00 \\ 
+RS & 1.00 & 1.03 & 1.08 & 1.10 & 1.18 & 1.39 & 120.00 & 125.00 \\
+  LHS & 1.00 & 1.09 & 1.19 & 1.17 & 1.24 & 1.52 & 98.92 & 125.00 \\
+  GS & 1.00 & 1.35 & 1.80 & 6.46 & 6.31 & 124.76 & 22.17 & 106.00 \\
+  GSR & 1.00 & 1.07 & 1.19 & 1.23 & 1.33 & 3.16 & 120.00 & 120.00 \\
+  GA & 1.00 & 1.02 & 1.09 & 1.12 & 1.19 & 1.65 & 120.00 & 120.00 \\
+  LM & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 3.77 & 119.00 & 119.00 \\
+  LMB & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 3.80 & 104.81 & 106.00 \\
+  LMBT & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 1.98 & 104.89 & 106.00 \\
+  RQ & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 2.06 & 119.00 & 119.00 \\
+  DOPT & 1.38 & 1.64 & 1.64 & 1.68 & 1.64 & 2.91 & 120.00 & 120.00 \\
+  DLM & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.08 & 54.85 & 56.00 \\
+  DLMT & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 54.84 & 56.00 \\
    \hline
 \end{tabular}
 \endgroup
-\caption{Summary statistics} 
+\caption{Summary statistics}
 \end{table}
 #+END_EXPORT
 
@@ -462,7 +466,7 @@ generate_model_plot <- function(big_model, small_model, results, full_data, metr
 
     sampled_data <- full_data[sample(1:nrow(full_data), 1000, replace = FALSE), ]
 
-    p <- ggplot() + 
+    p <- ggplot() +
          scale_shape_identity() +
          geom_point(data = sampled_data, alpha = 0.3,
                     aes(x = sampled_data[metric], y = time_per_pixel,
@@ -476,7 +480,7 @@ generate_model_plot <- function(big_model, small_model, results, full_data, metr
          geom_point(data = global_min, size = 3, alpha = 1.0,
                     aes(x = global_min[metric], y = time_per_pixel,
                         color = "Minimum", shape = 9)) +
-         theme_bw() + 
+         theme_bw() +
          theme(axis.text = element_text(size = 8),
                axis.title = element_text(size = 9, face = "bold"),
                legend.position = "bottom",

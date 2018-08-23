@@ -1,4 +1,4 @@
-% Created 2018-05-16 Wed 13:39
+% Created 2018-07-05 Thu 09:40
 % Intended LaTeX compiler: pdflatex
 \documentclass[final,12pt,a4paper]{article}
 
@@ -73,7 +73,7 @@ tabsize=2,
  pdftitle={Autotuning: D-Optimal Designs},
  pdfkeywords={},
  pdfsubject={},
- pdfcreator={Emacs 25.3.1 (Org mode 9.1.13)}, 
+ pdfcreator={Emacs 26.1 (Org mode 9.1.13)},
  pdflang={English}}
 \begin{document}
 
@@ -82,7 +82,14 @@ tabsize=2,
 
 
 \section{Autotuning with D-Optimal Designs and Analysis of Variance}
-\label{sec:org09a2432}
+\label{sec:orgc17a684}
+\subsection{Strategy Overview}
+\label{sec:org158fa31}
+\begin{center}
+\includegraphics[width=0.7\textwidth]{/home/phrb/code/dopt_anova_experiments/img/doe_anova_strategy.eps}
+\end{center}
+\subsection{Complete Step Descriptions}
+\label{sec:org521d9e7}
 \begin{enumerate}
 \item Use \texttt{optFederov} to find 24 experiments for the full model:
 \begin{align*}
@@ -156,38 +163,38 @@ entire dataset
 \item Compare the predicted \(time\_per\_pixel\) with the global optimum
 \end{enumerate}
 \section{Results}
-\label{sec:org66f5313}
+\label{sec:orgf19e1a0}
 \subsection{Comparing Strategies}
-\label{sec:orga090ae7}
+\label{sec:org01e95dd}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/comparison_histogram.pdf}
 \end{center}
 
 % latex table generated in R 3.4.4 by xtable 1.8-2 package
-% Wed May 16 13:39:15 2018
+% Thu Jul  5 09:40:29 2018
 \begin{table}[ht]
 \centering
 \begingroup\small
 \begin{tabular}{lrrrrrrrr}
   \hline
- & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. & Mean Pt. & Max Pt. \\ 
+ & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. & Mean Pt. & Max Pt. \\
   \hline
-RS & 1.00 & 1.03 & 1.08 & 1.10 & 1.18 & 1.39 & 120.00 & 125.00 \\ 
-  LHS & 1.00 & 1.09 & 1.19 & 1.17 & 1.24 & 1.52 & 98.92 & 125.00 \\ 
-  GS & 1.00 & 1.35 & 1.80 & 6.46 & 6.31 & 124.76 & 22.17 & 106.00 \\ 
-  GSR & 1.00 & 1.07 & 1.19 & 1.23 & 1.33 & 3.16 & 120.00 & 120.00 \\ 
-  GA & 1.00 & 1.02 & 1.09 & 1.12 & 1.19 & 1.65 & 120.00 & 120.00 \\ 
-  LM & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 3.77 & 119.00 & 119.00 \\ 
-  LMB & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 3.80 & 104.81 & 106.00 \\ 
-  LMBT & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 1.98 & 104.89 & 106.00 \\ 
-  RQ & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 2.06 & 119.00 & 119.00 \\ 
-  DOPT & 1.38 & 1.64 & 1.64 & 1.68 & 1.64 & 2.91 & 120.00 & 120.00 \\ 
-  DLM & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.08 & 54.85 & 56.00 \\ 
-  DLMT & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 54.84 & 56.00 \\ 
+RS & 1.00 & 1.03 & 1.08 & 1.10 & 1.18 & 1.39 & 120.00 & 125.00 \\
+  LHS & 1.00 & 1.09 & 1.19 & 1.17 & 1.24 & 1.52 & 98.92 & 125.00 \\
+  GS & 1.00 & 1.35 & 1.80 & 6.46 & 6.31 & 124.76 & 22.17 & 106.00 \\
+  GSR & 1.00 & 1.07 & 1.19 & 1.23 & 1.33 & 3.16 & 120.00 & 120.00 \\
+  GA & 1.00 & 1.02 & 1.09 & 1.12 & 1.19 & 1.65 & 120.00 & 120.00 \\
+  LM & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 3.77 & 119.00 & 119.00 \\
+  LMB & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 3.80 & 104.81 & 106.00 \\
+  LMBT & 1.01 & 1.01 & 1.03 & 1.03 & 1.03 & 1.98 & 104.89 & 106.00 \\
+  RQ & 1.01 & 1.01 & 1.01 & 1.02 & 1.01 & 2.06 & 119.00 & 119.00 \\
+  DOPT & 1.38 & 1.64 & 1.64 & 1.68 & 1.64 & 2.91 & 120.00 & 120.00 \\
+  DLM & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.08 & 54.85 & 56.00 \\
+  DLMT & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 1.01 & 54.84 & 56.00 \\
    \hline
 \end{tabular}
 \endgroup
-\caption{Summary statistics} 
+\caption{Summary statistics}
 \end{table}
 
 Added strategies:
@@ -200,7 +207,7 @@ Added strategies:
 \end{itemize}
 
 \subsection{Checking Accuracy}
-\label{sec:orgc201e9f}
+\label{sec:orgda1db91}
 To verify the ``accuracy'' of the selected metrics, I adapted the experiment
 scripts to check for each removed model variable in the actual \texttt{aov} summary.
 Those initial choices seem to match in most cases with the variables identified
@@ -229,7 +236,7 @@ the values that would be selected if each individual \texttt{aov} summary was an
 \end{center}
 
 \subsection{Comparing Models}
-\label{sec:orgfaf6ba9}
+\label{sec:orge8ecc96}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../img/model_comparison.pdf}
 \end{center}
