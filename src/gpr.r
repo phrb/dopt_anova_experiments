@@ -34,12 +34,17 @@ for(j in 1:repetitions){
         testing_sample <- testing_sample %>%
             filter(!(row_number %in% training_sample$row_number))
 
-        gp_model <- km(formula = ~ .,
+        gp_model <- km(formula = ~ y_component_number + I(1 / y_component_number) +
+                           vector_length + lws_y + I(1 / lws_y) +
+                           load_overlap + temporary_size +
+                           elements_number + I(1 / elements_number) +
+                           threads_number + I(1 / threads_number),
                        design = select(training_sample,
                                        -row_number,
                                        -time_per_pixel),
                        response = training_sample$time_per_pixel,
-                       nugget = 1e-8 * var(training_sample$time_per_pixel),
+                       #nugget = 1e-2 * var(training_sample$time_per_pixel),
+                       nugget = 1e-3,
                        control = list(pop.size = 400,
                                       BFGSburnin = 500))
 
