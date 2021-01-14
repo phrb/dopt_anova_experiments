@@ -13,13 +13,30 @@ str(complete_data)
 global_optimum <- filter(complete_data, time_per_pixel == min(time_per_pixel))
 
 initial_budget <- 120
-initial_sample <- 24
+initial_sample <- 13
 added_training_points <- 6
-iterations = (initial_budget - initial_sample) / added_training_points
+iterations = round((initial_budget - initial_sample) / added_training_points)
+print(iterations)
 
 repetitions <- 1000
+# sd_range <- 1.96
+sd_range <- 0.3
+nugget <- 1e-12
 
 results <- NULL
+
+delta <- 0.5 # (0, 1)
+scale_factor <- 30
+
+variance_dampening <- function(dimension, delta, time) {
+    return(sqrt((log((dimension * ((time * pi) ^ 2)) /
+                         (6 * delta))) /
+                scale_factor))
+}
+
+variance_dampening_ucb <- function(dimension, delta, time) {
+    return(sqrt(log(time)))
+}
 
 for(j in 1:repetitions){
     testing_sample <- complete_data
@@ -34,7 +51,10 @@ for(j in 1:repetitions){
         testing_sample <- testing_sample %>%
             filter(!(row_number %in% training_sample$row_number))
 
-        gp_model <- km(formula = ~ y_component_number + I(1 / y_component_number) +
+        invisible(
+            capture.output(
+                gp_model <-
+                    km(formula = ~ y_component_number + I(1 / y_component_number) +
                            vector_length + lws_y + I(1 / lws_y) +
                            load_overlap + temporary_size +
                            elements_number + I(1 / elements_number) +
@@ -43,10 +63,11 @@ for(j in 1:repetitions){
                                        -row_number,
                                        -time_per_pixel),
                        response = training_sample$time_per_pixel,
-                       #nugget = 1e-2 * var(training_sample$time_per_pixel),
-                       nugget = 1e-3,
+                       nugget = nugget * var(training_sample$time_per_pixel),
+                       #nugget = 1e-1,
                        control = list(pop.size = 400,
                                       BFGSburnin = 500))
+            ))
 
         gp_prediction <- predict(gp_model,
                                  select(testing_sample,
@@ -54,7 +75,18 @@ for(j in 1:repetitions){
                                         -time_per_pixel),
                                  "UK")
 
-        testing_sample$expected_improvement <- gp_prediction$mean - (1.96 * gp_prediction$sd)
+        # testing_sample$expected_improvement <- gp_prediction$mean -
+        #     (sd_range * gp_prediction$sd)
+
+        print(c(length(training_sample[, 1]),
+                variance_dampening(length(training_sample) - 2,
+                                   delta,
+                                   i)))
+
+        testing_sample$expected_improvement <- gp_prediction$mean -
+            (variance_dampening(length(training_sample),
+                                delta,
+                                length(training_sample[, 1])) * gp_prediction$sd)
 
         new_training_sample <- testing_sample %>%
             arrange(expected_improvement)
@@ -82,12 +114,12 @@ for(j in 1:repetitions){
     }
 
     best_points <- results %>%
-        mutate(method = "GPR") %>%
+        mutate(method = "GPR_dampening") %>%
         group_by(experiment_id)
 
     write.csv(best_points %>%
               filter(time_per_pixel == min(time_per_pixel)),
-              "best_points.csv")
+              "gpr_dampening_best_points.csv")
 
-    write.csv(best_points, "all_points.csv")
+    write.csv(best_points, "gpr_dampening_all_points.csv")
 }
