@@ -77,7 +77,7 @@ for (i in 1:iterations) {
 
     used <- used + nrow(federov_design)
 
-    # print(summary(regression))
+    print(summary(regression))
 
     # Checking the ANOVA summary we can identify at least two variables
     # that seem to have greater impact: 'vector_length' and 'lws_y'.
@@ -124,7 +124,7 @@ for (i in 1:iterations) {
       accuracies$second_step <- accuracies$second_step + 1
     }
 
-    # print(summary(regression))
+    print(summary(regression))
 
     # Checking the ANOVA summary we can identify at least two variables
     # that seem to have greater impact: 'y_component_number' and 'threads_number'.
@@ -167,7 +167,7 @@ for (i in 1:iterations) {
       accuracies$third_step <- accuracies$third_step + 1
     }
 
-    # print(summary(regression))
+    print(summary(regression))
 
     # Checking the ANOVA summary we can identify, at last, one variable
     # that seem to have greater impact: 'elements_number'
@@ -205,7 +205,7 @@ for (i in 1:iterations) {
     regression <- aov(time_per_pixel ~ load_overlap + temporary_size,
                       data = federov_design)
 
-    # print(summary(regression))
+    print(summary(regression))
 
     predicted_best <- data[predict(regression, data) == min(predict(regression, data)), ]
     # predicted_best
