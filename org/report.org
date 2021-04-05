@@ -884,7 +884,7 @@ generate_model_plot <- function(big_model,
     p = p +
         labs(y = "time_per_pixel",
              x = metric) +
-        scale_color_brewer(palette = "Dark2", direction = -1)
+        scale_color_brewer(palette = "Set1", direction = -1)
 
     return(p)
 }
