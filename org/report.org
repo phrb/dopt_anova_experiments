@@ -773,7 +773,7 @@ grid.arrange(p_vectorlength +
 #+RESULTS:
 [[file:../img/rs_dlmt_model_comparison.pdf]]
 *** New Figure
-#+HEADER: :file ../img/model_comparison.pdf :exports results :width 7 :height 9
+#+HEADER: :file ../img/model_sample_execution.pdf :exports results :width 7 :height 10.5
 #+HEADER: :results graphics output :session *R*
 #+BEGIN_SRC R
 library(AlgDesign)
@@ -788,7 +788,8 @@ generate_model_plot <- function(big_model,
                                 results,
                                 full_data,
                                 metric,
-                                add_legend) {
+                                add_legend,
+                                federov_d) {
     bm_predict = NULL
     bm_predict = data.frame(response = predict(big_model, results),
                             variable = results[metric],
@@ -822,25 +823,29 @@ generate_model_plot <- function(big_model,
                  replace = FALSE)
 
     p = ggplot() +
-        geom_point(data = sampled_data,
-                   alpha = 0.3,
+        geom_jitter(data = sampled_data,
+                   alpha = 0.2,
                    size = 1.5,
                    stat = "unique",
+                   height = 0.0,
+                   color = "gray65",
                    aes(x = !!sym(metric),
                        y = time_per_pixel),
                    show.legend = FALSE) +
-        geom_point(data = predictions %>%
-                       filter(id == "small_model"),
-                   size = 2,
-                   shape = 4,
-                   alpha = 1.0,
-                   stroke = 2.5,
+        geom_jitter(data = federov_d,
+                   alpha = 1.4,
+                   size = 1.5,
                    stat = "unique",
+                   height = 0.0,
+                   #color = "gray70",
+                   shape = 4,
+                   stroke = 1.2,
                    aes(x = !!sym(metric),
                        y = time_per_pixel,
-                       color = "Prediction")) +
+                       color = "Design Points"),
+                   show.legend = TRUE) +
         geom_point(data = global_min,
-                   size = 1,
+                   size = 3.5,
                    shape = 4,
                    alpha = 1.0,
                    stroke = 2,
@@ -848,13 +853,23 @@ generate_model_plot <- function(big_model,
                    aes(x = !!sym(metric),
                        y = time_per_pixel,
                        color = "Minimum")) +
+        geom_point(data = predictions %>%
+                       filter(id == "small_model"),
+                   size = 1.5,
+                   shape = 4,
+                   alpha = 1.0,
+                   stroke = 2.5,
+                   stat = "unique",
+                   aes(x = !!sym(metric),
+                       y = time_per_pixel,
+                       color = "Prediction")) +
         theme_bw(base_size = 13)
 
     if(add_legend) {
         p = p +
             theme(axis.title = element_text(face = "italic"),
                   plot.title = element_text(size = 13, face = "bold.italic"),
-                  legend.position = c(0.7, 0.86),
+                  legend.position = c(0.27, 0.86),
                   legend.text = element_text(size = 11),
                   legend.background = element_blank(),
                   legend.title = element_blank())
@@ -869,7 +884,7 @@ generate_model_plot <- function(big_model,
     p = p +
         labs(y = "time_per_pixel",
              x = metric) +
-        scale_color_brewer(palette = "Set1")
+        scale_color_brewer(palette = "Dark2", direction = -1)
 
     return(p)
 }
@@ -899,6 +914,7 @@ output <- optFederov(~ y_component_number + I(1 / y_component_number) +
 
 federov_design <- data[output$rows, ]
 experiments <- output$rows
+federov_d1 <- federov_design
 
 # Complete model:
 regression <- aov(time_per_pixel ~ y_component_number + I(1 / y_component_number) +
@@ -933,14 +949,16 @@ p_vectorlength <- generate_model_plot(regression,
                                       scaled_data,
                                       complete_data[ , c(factors, "time_per_pixel")],
                                       "vector_length",
-                                      TRUE)
+                                      TRUE,
+                                      federov_d1)
 
 p_lwsy <- generate_model_plot(regression,
                               small_model,
                               scaled_data,
                               complete_data[ , c(factors, "time_per_pixel")],
                               "lws_y",
-                              FALSE)
+                              FALSE,
+                              federov_d1)
 
 used <- used + nrow(federov_design)
 
@@ -969,6 +987,8 @@ if (nrow(scaled_data) > 18) {
 } else {
     federov_design <- data
 }
+
+federov_d2 <- federov_design
 
 used_rows <- rownames(federov_design)[!(rownames(federov_design) %in% experiments)]
 used <- used + nrow(federov_design[used_rows, ])
@@ -1007,13 +1027,15 @@ p_ycomponentnumber <- generate_model_plot(regression, small_model,
                                                                      c(factors,
                                                                        "time_per_pixel")],
                                           "y_component_number",
-                                          FALSE)
+                                          FALSE,
+                                          federov_d2)
 
 p_threadsnumber <- generate_model_plot(regression, small_model,
                                        scaled_data, complete_data[ , c(factors,
                                                                        "time_per_pixel")],
                                        "threads_number",
-                                       FALSE)
+                                       FALSE,
+                                       federov_d2)
 
 # Checking the ANOVA summary we can identify at least two variables
 # that seem to have greater impact: 'y_component_number' and 'threads_number'.
@@ -1040,6 +1062,8 @@ if (nrow(scaled_data) > 10) {
 } else {
     federov_design <- data
 }
+
+federov_d3 <- federov_design
 
 used_rows <- rownames(federov_design)[!(rownames(federov_design) %in% experiments)]
 used <- used + nrow(federov_design[used_rows, ])
@@ -1072,7 +1096,8 @@ small_model <- lm(time_per_pixel ~ elements_number + I(1 / elements_number),
 p_elementsnumber <- generate_model_plot(regression, small_model,
                                         scaled_data, complete_data[ , c(factors, "time_per_pixel")],
                                         "elements_number",
-                                        FALSE)
+                                        FALSE,
+                                        federov_d3)
 
 # Checking the ANOVA summary we can identify, at last, one variable
 # that seem to have greater impact: 'elements_number'
@@ -1098,6 +1123,8 @@ if (nrow(scaled_data) > 6) {
     federov_design <- data
 }
 
+federov_d4 <- federov_design
+
 used_rows <- rownames(federov_design)[!(rownames(federov_design) %in% experiments)]
 used <- used + nrow(federov_design[used_rows, ])
 experiments <- c(experiments, output$rows[!(output$rows %in% experiments)])
@@ -1121,6 +1148,11 @@ predicted_best <- predicted_best[, c("elements_number", "y_component_number",
                                     "time_per_pixel", "point_number", "method",
                                     "slowdown")]
 
+federov_full = bind_rows(federov_d1,
+                         federov_d2,
+                         federov_d3,
+                         federov_d4)
+
 grid.arrange(p_vectorlength +
              ggtitle("Step 1: Fix vector and lws_y"),
              p_lwsy + ggtitle(" "),
@@ -1133,4 +1165,4 @@ grid.arrange(p_vectorlength +
 #+END_SRC
 
 #+RESULTS:
-[[file:../img/model_comparison.pdf]]
+[[file:../img/model_sample_execution.pdf]]
