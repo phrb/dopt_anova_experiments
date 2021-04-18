@@ -789,7 +789,8 @@ generate_model_plot <- function(big_model,
                                 full_data,
                                 metric,
                                 add_legend,
-                                federov_d) {
+                                federov_d,
+                                jitter_width) {
     bm_predict = NULL
     bm_predict = data.frame(response = predict(big_model, results),
                             variable = results[metric],
@@ -824,22 +825,24 @@ generate_model_plot <- function(big_model,
 
     p = ggplot() +
         geom_jitter(data = sampled_data,
-                   alpha = 0.2,
-                   size = 1.5,
+                   alpha = 0.3,
+                   size = 1.7,
                    stat = "unique",
                    height = 0.0,
-                   color = "gray65",
+                   width = jitter_width,
+                   color = "gray75",
                    aes(x = !!sym(metric),
                        y = time_per_pixel),
                    show.legend = FALSE) +
-        geom_jitter(data = federov_d,
-                   alpha = 1.4,
-                   size = 1.5,
+        geom_point(data = federov_d,
+                   alpha = 1,
+                   size = 2,
                    stat = "unique",
-                   height = 0.0,
+                   # height = 0.0,
+                   # width = jitter_width,
                    #color = "gray70",
                    shape = 4,
-                   stroke = 1.2,
+                   stroke = 2,
                    aes(x = !!sym(metric),
                        y = time_per_pixel,
                        color = "Design Points"),
@@ -868,7 +871,7 @@ generate_model_plot <- function(big_model,
     if(add_legend) {
         p = p +
             theme(axis.title = element_text(face = "italic"),
-                  plot.title = element_text(size = 13, face = "bold.italic"),
+                  plot.title = element_text(size = 13, face = "italic"),
                   legend.position = c(0.27, 0.86),
                   legend.text = element_text(size = 11),
                   legend.background = element_blank(),
@@ -876,7 +879,7 @@ generate_model_plot <- function(big_model,
     } else {
         p = p +
             theme(axis.title = element_text(face = "italic"),
-                  plot.title = element_text(size = 13, face = "bold.italic"),
+                  plot.title = element_text(size = 13, face = "italic"),
                   legend.position = "none",
                   legend.title = element_blank())
     }
@@ -884,7 +887,12 @@ generate_model_plot <- function(big_model,
     p = p +
         labs(y = "time_per_pixel",
              x = metric) +
-        scale_color_brewer(palette = "Set1", direction = -1)
+        scale_color_brewer(palette = "Set1", direction = -1) +
+        guides(color = guide_legend(nrow = 3,
+                                    override.aes = list(alpha = 1.0,
+                                                        shape = 4,
+                                                        stroke = 2,
+                                                        size = 3)))
 
     return(p)
 }
@@ -950,7 +958,8 @@ p_vectorlength <- generate_model_plot(regression,
                                       complete_data[ , c(factors, "time_per_pixel")],
                                       "vector_length",
                                       TRUE,
-                                      federov_d1)
+                                      federov_d1,
+                                      0.2)
 
 p_lwsy <- generate_model_plot(regression,
                               small_model,
@@ -958,7 +967,8 @@ p_lwsy <- generate_model_plot(regression,
                               complete_data[ , c(factors, "time_per_pixel")],
                               "lws_y",
                               FALSE,
-                              federov_d1)
+                              federov_d1,
+                              13.0)
 
 used <- used + nrow(federov_design)
 
@@ -1028,14 +1038,16 @@ p_ycomponentnumber <- generate_model_plot(regression, small_model,
                                                                        "time_per_pixel")],
                                           "y_component_number",
                                           FALSE,
-                                          federov_d2)
+                                          federov_d2,
+                                          0.1)
 
 p_threadsnumber <- generate_model_plot(regression, small_model,
                                        scaled_data, complete_data[ , c(factors,
                                                                        "time_per_pixel")],
                                        "threads_number",
                                        FALSE,
-                                       federov_d2)
+                                       federov_d2,
+                                       13)
 
 # Checking the ANOVA summary we can identify at least two variables
 # that seem to have greater impact: 'y_component_number' and 'threads_number'.
@@ -1097,7 +1109,8 @@ p_elementsnumber <- generate_model_plot(regression, small_model,
                                         scaled_data, complete_data[ , c(factors, "time_per_pixel")],
                                         "elements_number",
                                         FALSE,
-                                        federov_d3)
+                                        federov_d3,
+                                        0.1)
 
 # Checking the ANOVA summary we can identify, at last, one variable
 # that seem to have greater impact: 'elements_number'
